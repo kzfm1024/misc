@@ -1,0 +1,52 @@
+?- pair(X, john, martini).
+false.
+
+?- pair(mary, susan, gin).
+false.
+
+?- pair(john, mary, gin).
+true.
+
+?- pair(john, john, gin).
+false.
+
+?- pair(X, Y, gin).
+X = mary,
+Y = john ;
+X = mary,
+Y = fred ;
+X = john,
+Y = mary ;
+X = john,
+Y = fred ;
+X = fred,
+Y = mary ;
+X = fred,
+Y = john ;
+false.
+
+?- pair(bertram, lucinda, vodka).
+false.
+
+?- pair(X, Y, Z).
+X = mary,
+Y = john,
+Z = gin ;
+X = mary,
+Y = fred,
+Z = gin ;
+X = john,
+Y = mary,
+Z = gin ;
+X = john,
+Y = fred,
+Z = gin ;
+X = fred,
+Y = mary,
+Z = gin ;
+X = fred,
+Y = john,
+Z = gin ;
+false.
+
+?- 

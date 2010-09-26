@@ -1,0 +1,157 @@
+?- affordable(wiltshire, sussex).
+true ;
+false.
+
+?- affordable(wiltshire, kent).
+false.
+
+?- affordable(hampshire, hampshire).
+true ;
+true ;
+true ;
+true ;
+false.
+
+?- affordable(X, kent).
+X = sussex ;
+X = hampshire ;
+X = hampshire ;
+X = berkshire ;
+X = kent ;
+X = surrey ;
+X = kent ;
+false.
+
+?- affordable(sussex, X).
+X = sussex ;
+X = surrey ;
+X = kent ;
+X = sussex ;
+X = hampshire ;
+X = berkshire ;
+X = sussex ;
+X = surrey ;
+X = berkshire ;
+X = wiltshire ;
+false.
+
+?- affordable(X, Y).
+X = sussex,
+Y = sussex ;
+X = sussex,
+Y = surrey ;
+X = sussex,
+Y = kent ;
+X = sussex,
+Y = sussex ;
+X = sussex,
+Y = hampshire ;
+X = sussex,
+Y = berkshire ;
+X = surrey,
+Y = sussex ;
+X = surrey,
+Y = surrey ;
+X = hampshire,
+Y = kent ;
+X = hampshire,
+Y = surrey ;
+X = hampshire,
+Y = hampshire ;
+X = hampshire,
+Y = kent ;
+X = hampshire,
+Y = sussex ;
+X = hampshire,
+Y = hampshire ;
+X = hampshire,
+Y = berkshire ;
+X = hampshire,
+Y = surrey ;
+X = hampshire,
+Y = hampshire ;
+X = hampshire,
+Y = wiltshire ;
+X = berkshire,
+Y = kent ;
+X = berkshire,
+Y = sussex ;
+X = berkshire,
+Y = hampshire ;
+X = berkshire,
+Y = berkshire ;
+X = wiltshire,
+Y = sussex ;
+X = wiltshire,
+Y = surrey ;
+X = wiltshire,
+Y = berkshire ;
+X = wiltshire,
+Y = wiltshire ;
+X = wiltshire,
+Y = surrey ;
+X = wiltshire,
+Y = hampshire ;
+X = wiltshire,
+Y = wiltshire ;
+X = kent,
+Y = kent ;
+X = kent,
+Y = surrey ;
+X = kent,
+Y = hampshire ;
+X = surrey,
+Y = kent ;
+X = surrey,
+Y = surrey ;
+X = surrey,
+Y = hampshire ;
+X = kent,
+Y = kent ;
+X = kent,
+Y = sussex ;
+X = kent,
+Y = hampshire ;
+X = kent,
+Y = berkshire ;
+X = sussex,
+Y = sussex ;
+X = sussex,
+Y = surrey ;
+X = sussex,
+Y = berkshire ;
+X = sussex,
+Y = wiltshire ;
+X = surrey,
+Y = sussex ;
+X = surrey,
+Y = surrey ;
+X = surrey,
+Y = berkshire ;
+X = surrey,
+Y = wiltshire ;
+X = berkshire,
+Y = sussex ;
+X = berkshire,
+Y = surrey ;
+X = berkshire,
+Y = berkshire ;
+X = berkshire,
+Y = wiltshire ;
+X = surrey,
+Y = surrey ;
+X = surrey,
+Y = hampshire ;
+X = surrey,
+Y = wiltshire ;
+X = hampshire,
+Y = hampshire ;
+X = hampshire,
+Y = berkshire ;
+X = berkshire,
+Y = hampshire ;
+X = berkshire,
+Y = berkshire ;
+false.
+
+?- 

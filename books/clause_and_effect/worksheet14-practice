@@ -1,0 +1,11 @@
+
+?- path(a, b, [a, b, c, d, e, f, g, h]).
+true ;
+true ;
+false.
+
+?- path2(a, b, [a, b, c, d, e, f, g, h]).
+true ;
+false.
+
+?- 

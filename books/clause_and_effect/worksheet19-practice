@@ -1,0 +1,15 @@
+?- coll([q(17, duck), q(15, goose), q(41, quail), q(12, goose), q(37, quail)], X).
+X = [q(17, duck), q(27, goose), q(78, quail)] ;
+X = [q(17, duck), q(27, goose), q(41, quail), q(37, quail)] ;
+X = [q(17, duck), q(15, goose), q(78, quail), q(12, goose)] ;
+X = [q(17, duck), q(15, goose), q(41, quail), q(12, goose), q(37, quail)] ;
+false.
+
+?- collect([q(17, duck), q(15, goose), q(41, quail), q(12, goose), q(37, quail)], X).
+X = [q(17, duck), q(27, goose), q(78, quail)] ;
+X = [q(17, duck), q(15, goose), q(78, quail), q(12, goose)] ;
+X = [q(17, duck), q(27, goose), q(41, quail), q(37, quail)] ;
+X = [q(17, duck), q(15, goose), q(41, quail), q(12, goose), q(37, quail)] ;
+false.
+
+?- 
