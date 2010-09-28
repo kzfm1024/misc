@@ -1,8 +1,0 @@
-
-?- mapsum([1, 3, 2, 5, 4], B).
-B = [1, 4, 6, 11, 15].
-
-?- enum([cabbage, beet, carrot, bean, radish, beet], B).
-B = [n(cabbage, 1), n(beet, 2), n(carrot, 3), n(bean, 4), n(radish, 5), n(beet, 6)].
-
-?- 
