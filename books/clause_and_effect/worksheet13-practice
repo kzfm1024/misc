@@ -1,0 +1,15 @@
+
+?- setify([a, a, b, c, b], X).
+X = [a, c, b] ;
+X = [a, b, c, b] ;
+X = [a, a, c, b] ;
+X = [a, a, b, c, b].
+
+?- setify([a, a, b, c, b], [a, c, b]).
+true ;
+false.
+
+?- setify([a, a, b, c, b], [a, b, c]).
+false.
+
+?- 

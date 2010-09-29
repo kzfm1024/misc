@@ -1,0 +1,23 @@
+
+?- length([apple, pear], N).
+N = 2.
+
+?- length2([apple, pear], N).
+N = 2.
+
+?- length(L, 3).
+L = [_G283, _G286, _G289].
+
+?- length2(L, 3).
+L = [_G277, _G280, _G283] .
+
+?- length([alpha], 2).
+false.
+
+?- length2([alpha], 2).
+false.
+
+?- sum([1, 2, 3, 4, 5], S).
+S = 15.
+
+?- 
