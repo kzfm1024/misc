@@ -93,8 +93,25 @@
 (put 'with-locking-mutex 'scheme-indent-function 1)
 (put 'guard 'scheme-indent-function 1)
 
+(put 'map-for 'scheme-indent-function 1)
+(put 'for 'scheme-indent-function 1)
+;; (put 'string-for 'scheme-indent-function 1)
+(put 'do-map 'scheme-indent-function 1)
+(put 'do-every 'scheme-indent-function 1)
+(put 'do-any 'scheme-indent-function 1)
+(put 'block 'scheme-indent-function 1)
+
 ;;
 ;; SBCL
 ;;
-(setq inferior-lisp-program "sbcl")
-;(setq auto-mode-alist (cons '("\\.lsp$" . lisp-mode) auto-mode-alist))
+(add-to-list 'load-path "~/elisp/slime/")  ; your SLIME directory
+(setq inferior-lisp-program "/usr/local/bin/sbcl") ; your Lisp system
+(require 'slime)
+(slime-setup)
+
+;;
+;; Prolog
+;;
+(setq auto-mode-alist
+  (cons (cons "\\.pl" 'prolog-mode)
+     auto-mode-alist))
