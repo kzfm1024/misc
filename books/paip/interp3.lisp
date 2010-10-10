@@ -6,7 +6,8 @@
 
 ;;; One bug fix by Cheng Lu Hsu, hsuc@cory.Berkeley.EDU
 
-(requires "interp1")
+;(requires "interp1")
+(load "interp1.lisp")
 
 (defun interp (x env cc)
   "Evaluate the expression x in the environment env,
@@ -47,8 +48,10 @@
   (init-scheme-interp)
   (if x
       (interp x nil #'print)
-    (loop (format t "~&==> ")
-      (interp (read) nil #'print))))
+      (loop
+         (format t "~&==> ")
+         (finish-output) ; added by kzfm1024
+         (interp (read) nil #'print))))
 
 (defun interp-begin (body env cc)
   "Interpret each element of BODY, passing the last to CC."

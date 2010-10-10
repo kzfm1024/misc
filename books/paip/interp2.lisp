@@ -4,7 +4,8 @@
 
 ;;; File interp2.lisp: Tail-recursive Scheme interpreter.
 
-(requires "interp1")
+;(requires "interp1")
+(load "interp1.lisp")
 
 (defun interp (x &optional env)
   "Evaluate the expression x in the environment env.

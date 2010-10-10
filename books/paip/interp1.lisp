@@ -80,8 +80,10 @@
   (init-scheme-interp)
   (if x
       (interp x nil)
-    (loop (format t "~&==> ")
-      (print (interp (read) nil)))))
+      (loop
+         (format t "~&==> ")
+         (finish-output) ; added by kzfm1024
+         (print (interp (read) nil)))))
 
 ;;;; The following version handles macros:
 
