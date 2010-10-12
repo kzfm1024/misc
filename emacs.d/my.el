@@ -105,7 +105,7 @@
 ;; SBCL
 ;;
 (add-to-list 'load-path "~/elisp/slime/")  ; your SLIME directory
-(setq inferior-lisp-program "/usr/local/bin/sbcl") ; your Lisp system
+(setq inferior-lisp-program "/usr/bin/sbcl") ; your Lisp system
 (require 'slime)
 (slime-setup)
 
