@@ -1,6 +1,3 @@
-(use srfi-1)
-(use srfi-27)
-
 ;;
 ;; Common Lisp 
 ;;  (cdr '()) は NIL を返す。
@@ -12,13 +9,13 @@
 ;;  assoc は一致しない場合は #f を返す。
 ;;  '() は true として扱われる。
 ;;
-;; rest
-;; (rest #f) => #f
-;; (rest '()) => #f
-;;
+
+(use srfi-1)
+(use srfi-27)
+
 (define (rest lst)
-  (if (or (eq? lst #f) (null? lst))
-      #f
+  (if (null? lst)
+      '()
       (cdr lst)))
 
 (define (elt lst n) (first (drop lst n)))
@@ -27,14 +24,6 @@
   (elt choices (random-integer (length choices))))
 
 (random-source-randomize! default-random-source)
-
-(define null null?)
-
-(define listp list?)
-
-(define mappend append-map)
-
-(define mapcar map)
 
 ;;; ==============================
 
@@ -53,17 +42,18 @@
 (define (rule-lhs rule) (rest rule))
 
 (define (rule-rhs rule) (rest (rest rule)))
-  
+
 (define (rewrites category)
-  (rule-rhs (assoc category *grammar*)))
+  (cond ((assoc category *grammar*) => rule-rhs)
+        (else '())))
 
 ;;; ==============================
 
 (define (generate phrase)
-  (cond ((null? phrase) '()) ; FIXME
-        ((listp phrase)
-         (mappend generate phrase))
-        ((rewrites phrase)
+  (cond ((null? phrase) '())
+        ((list? phrase)
+         (append-map generate phrase))
+        ((not (null? (rewrites phrase)))
          (generate (random-elt (rewrites phrase))))
         (else (list phrase))))
 
@@ -89,9 +79,10 @@
 ;;; ==============================
 
 (define (generate-tree phrase)
-  (cond ((listp phrase)
-         (mapcar generate-tree phrase))
-        ((rewrites phrase)
+  (cond ((null? phrase) '())
+        ((list? phrase)
+         (map generate-tree phrase))
+        ((not (null? (rewrites phrase)))
          (cons phrase
                (generate-tree (random-elt (rewrites phrase)))))
         (else (list phrase))))
@@ -99,20 +90,20 @@
 ;;; ==============================
 
 (define (generate-all phrase)
-  (cond ((null phrase) (list nil))
-        ((listp phrase)
+  (cond ((null? phrase) (list '()))
+        ((list? phrase)
          (combine-all (generate-all (first phrase))
                       (generate-all (rest phrase))))
-        ((rewrites phrase)
-         (mappend generate-all (rewrites phrase)))
+        ((not (null? (rewrites phrase)))
+         (append-map generate-all (rewrites phrase)))
         (else (list (list phrase)))))
 
 #|
-  "Return a list of lists formed by appending a y to an x.
-  E.g., (combine-all '((a) (b)) '((1) (2)))
-  -> ((A 1) (B 1) (A 2) (B 2))."
+"Return a list of lists formed by appending a y to an x.
+E.g., (combine-all '((a) (b)) '((1) (2)))
+-> ((A 1) (B 1) (A 2) (B 2))."
 |#
 (define (combine-all xlist ylist)
-  (mappend (lambda (y)
-             (mapcar (lambda (x) (append x y)) xlist))
-           ylist))
+  (append-map (lambda (y)
+                (map (lambda (x) (append x y)) xlist))
+              ylist))
