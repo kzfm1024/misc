@@ -30,7 +30,7 @@
 
 (define null null?)
 
-(define listp pair?)
+(define listp list?)
 
 (define mappend append-map)
 
@@ -60,7 +60,8 @@
 ;;; ==============================
 
 (define (generate phrase)
-  (cond ((listp phrase)
+  (cond ((null? phrase) '()) ; FIXME
+        ((listp phrase)
          (mappend generate phrase))
         ((rewrites phrase)
          (generate (random-elt (rewrites phrase))))
