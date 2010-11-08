@@ -13,3 +13,16 @@
 (apply (lambda (x y)
          (apply (lambda () (cons x (cons y '()))) '()))
        '(a b))
+
+(define toggle
+  (let ((x #t))
+    (lambda ()
+      (set! x (not x))
+      x)))
+
+(define toggle
+  ((lambda (x)
+     (lambda () (set! x (not x)) x))
+   #t))
+            
+
