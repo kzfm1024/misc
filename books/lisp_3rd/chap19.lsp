@@ -94,13 +94,159 @@
 (defun straight-line-distance (node-1 node-2)
   (let ((coordinates-1 (get node-1 'coordinates))
         (coordinates-2 (get node-2 'coordinates)))
-    (sqrt (+ (expt (- (first coordiantes-1)
-                      (first coordiantes-2))
+    (sqrt (+ (expt (- (first coordinates-1)
+                      (first coordinates-2))
                    2)
-             (expt (- (second coordiantes-1)
-                      (second coordiantes-2))
+             (expt (- (second coordinates-1)
+                      (second coordinates-2))
                    2)))))
 
 (defun closerp (path-1 path-2 target-node)
   (< (straight-line-distance (first path-1) target-node)
      (straight-line-distance (first path-2) target-node)))
+
+;;
+;; Solution 19-3
+;;
+
+(merge 'list
+       '(1 3 5 7 9)
+       '(0 2 4 6 8)
+       #'<)
+
+(merge 'list "13579" '(#\0 #\2 #\4 #\6 #\8) #'char<)
+
+(merge 'string "13579" '(#\0 #\2 #\4 #\6 #\8) #'char<)
+
+(defun best-first (start finish &optional (queue (list (list start))))
+  (cond ((endp queue) nil)
+        ((eq finish (first (first queue)))
+         (reverse (first queue)))
+        (t (best-first
+            start
+            finish
+            (merge 'list
+                   (sort (extend (first queue))
+                         #'(lambda (p1 p2) (closerp p1 p2 finish)))
+                   (rest queue)
+                   #'(lambda (p1 p2) (closerp p1 p2 finish)))))))
+
+;;
+;; Solution 19-4
+;;
+(defun hill-climb (start finish &optional (queue (list (list start))))
+  (cond ((endp queue) nil)
+        ((eq finish (first (first queue)))
+         (reverse (first queue)))
+        (t (hill-climb
+            start
+            finish
+            (append (sort (extend (first queue))
+                          #'(lambda (p1 p2) (closerp p1 p2 finish)))
+                    (rest queue))))))
+
+;;
+;; Solution 19-5
+;;
+(defun path-length (path)
+  (if (endp (rest path))
+      0
+      (+ (straight-line-distance (first path) (second path))
+         (path-length (rest path)))))
+
+(defun shorterp (path-1 path-2)
+  (< (path-length path-1) (path-length path-2)))
+
+(defun branch-and-bound (start finish &optional (queue (list (list start))))
+  (cond ((endp queue) nil)
+        ((eq finish (first (first queue)))
+         (reverse (first queue)))
+        (t (branch-and-bound
+            start
+            finish
+            (sort (append (extend (first queue))
+                          (rest queue))
+                  #'shorterp)))))
+
+;;
+;; Solution 19-6
+;;
+(defun beam (start finish width &optional (queue (list (list start))))
+  (setf queue (butlast queue (max (- (length queue) width) 0)))
+  (cond ((endp queue) nil)
+        ((eq finish (first (first queue)))
+         (reverse (first queue)))
+        (t (beam start
+                 finish
+                 width
+                 (sort
+                  (apply #'append (mapcar #'extend queue))
+                  #'(lambda (p1 p2) (closerp p1 p2 finish)))))))
+
+;;
+;; Solution 19-7
+;;
+(setf (get 's 'successors) '(a d)
+      (get 'a 'successors) '(b d)
+      (get 'b 'successors) '(c e)
+      (get 'c 'successors) '()
+      (get 'd 'successors) '(e)
+      (get 'e 'successors) '(f)
+      (get 'f 'successors) '())
+
+(setf (get 's 'time-consumed) 3
+      (get 'a 'time-consumed) 2
+      (get 'b 'time-consumed) 4
+      (get 'c 'time-consumed) 3
+      (get 'd 'time-consumed) 3
+      (get 'e 'time-consumed) 2
+      (get 'f 'time-consumed) 1)
+
+(defun first-path-incomplete-p (p1 p2)
+  (not (endp (extend p1)))) ; Second argument ignored.
+
+(defun all-paths (start &optional (queue (list (list start))))
+  (cond ((endp (extend (first queue)))
+         (mapcar #'reverse queue))
+        (t (all-paths
+            start
+            (sort (append (extend (first queue)) (rest queue))
+                  #'first-path-incomplete-p)))))
+
+(defun extend (path)
+  (mapcar #'(lambda (new-node) (cons new-node path))
+          (remove-if #'(lambda (successor) (member successor path))
+                     (get (first path) 'successors))))
+;;
+;; Solution 19-8
+;;
+(defun time-consumed (path)
+  (if (endp path)
+      0
+      (+ (get (first path) 'time-consumed)
+         (time-consumed (rest path)))))
+
+(defun longerp (path-1 path-2)
+  (> (time-consumed path-1)
+     (time-consumed path-2)))
+
+(defun critical-path (start &optional (queue (list (list start))))
+  (cond ((endp (extend (first queue)))
+         (reverse (first (sort queue #'longerp))))
+        (t (critical-path
+            start
+            (sort (append (extend (first queue)) (rest queue))
+                  #'first-path-incomplete-p)))))
+
+;;
+;; Solution 19-10
+;;
+(defun move-best-to-front (queue predicate)
+  (if (endp queue)
+      nil
+      (let ((result (first queue)))
+        (dolist (next (rest queue)
+                 (cons result
+                       (remove result queue :test #'equal)))
+          (when (funcall predicate next result)
+            (setf result next))))))
