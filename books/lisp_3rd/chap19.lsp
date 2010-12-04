@@ -305,6 +305,8 @@
   (dotimes (n (+ 1 (* 2 (length board))))
     (format t "-")))
 
+;;(print-board '((0 1) (1 3) (2 0) (3 2)))
+
 ;;
 ;; Solution 19-13
 ;:
@@ -334,3 +336,5 @@
           (queen size (cons (list n m) board) (+ 1 n) 0)))
     ;; In any case, try with next row:
     (queen size board n (+ 1 m))))
+
+;; (queen 8)
