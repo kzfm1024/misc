@@ -239,7 +239,7 @@
                   #'first-path-incomplete-p)))))
 
 ;;
-;; Solution 19-10
+;; Solution 19-9
 ;;
 (defun move-best-to-front (queue predicate)
   (if (endp queue)
@@ -250,3 +250,87 @@
                        (remove result queue :test #'equal)))
           (when (funcall predicate next result)
             (setf result next))))))
+
+;;
+;; Solution 19-10
+;;
+(defun transfer (x y a b c)
+  (cond ((= x c)
+         (format t "~%I can produce ~a units in A." c)
+         nil)
+        ((= y c)
+         (format t "~%I can produce ~a units in B." c)
+         nil)
+        ;; If crock A is full, empty it:
+        ((= x a) (cons '(empty a) (transfer 0 y a b c)))
+        ;; If crokc B is empty, fill it:
+        ((= y 0) (cons '(fill b) (transfer x b a b c)))
+        ;; Will what is in B fit into A?
+        ;; If yes, empty B into A:
+        ((> (- a x) y) (cons '(empty b into a)
+                             (transfer (+ x y) 0 a b c)))
+        ;; Otherwise, fill A from B:
+        (t (cons '(fill a from b)
+                 (transfer a (- y (- a x)) a b c)))))
+
+;;
+;; Solution 19-11
+;;
+(defun water-crock (a b c)
+  (cond ((and (> c a) (> c b))
+         (format t "~%~a is too large." c))
+        ((not (zerop (rem c (gcd a b))))
+         (format t "~%Sorry, I cannot produce ~a units." c))
+        (t (transfer 0 0 a b c))))
+
+;;
+;; Solution 19-20
+;;
+(defun print-board (board)
+  (format t "~%*")                      ; Upper left *.
+  (print-horizontal-border board)       ; Upper boarder.
+  (format t "*")                        ; Upper right *.
+  (dolist (queen-coordinates board)
+    (format t "~%|")                    ; Left boarder.
+    (dotimes (column (length board))
+      (if (= column (second queen-coordinates))
+          (format t " Q")               ; Occupied.
+          (format t " .")))             ; Not occupied.
+    (format t " |"))                    ; Right border.
+  (format t "~%*")                      ; Lower left *.
+  (print-horizontal-border board)       ; Lower border.
+  (format t "*"))                       ; Lower right *.
+
+(defun print-horizontal-border (board)
+  (dotimes (n (+ 1 (* 2 (length board))))
+    (format t "-")))
+
+;;
+;; Solution 19-13
+;:
+(defun threat (i j a b)
+  (or (= i a)
+      (= j b)
+      (= (- i j) (- a b))
+      (= (+ i j) (+ a b))))
+
+(defun conflict (n m board)
+  (cond ((endp board) nil)
+        ((threat n
+                 m
+                 (first (first board))
+                 (second (first board)))
+         t)
+        (t (conflict n m (rest board)))))
+
+(defun queen (size &optional (board nil) (n 0) (m 0))
+  (unless (= m size)
+    ;; Check for conflict in current row and column:
+    (unless (conflict n m board)
+      (if (= (+ 1 n) size)
+          ;; If all queens placed, print solution:
+          (print-board (reverse (cons (list n m) board)))
+          ;; Otherwise, proceed to next row:
+          (queen size (cons (list n m) board) (+ 1 n) 0)))
+    ;; In any case, try with next row:
+    (queen size board n (+ 1 m))))
