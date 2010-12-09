@@ -23,6 +23,7 @@
   (setf (event-input-task output) task))
 
 (defvar *start* nil)
+(defvar *design* nil)
 
 (let ((s (make-task :duration 4 :name 'select))
       (n (make-task :duration 6 :name 'negotiate))
@@ -35,6 +36,7 @@
       (e4 (make-event)) (e5 (make-event))
       (e6 (make-event)) (e7 (make-event)))
   (setf *start* e1)
+  (setf *design* d) ; added by kzfm1024
   (connect s e2 (list e1))    (connect n e3 (list e2))
   (connect d e4 (list e2))    (connect p e5 (list e3 e4))
   (connect f e6 (list e3 e4)) (connect m e7 (list e5 e6))
@@ -104,5 +106,67 @@
          (eval (pop *event-sequence*)))))
 
 ;;
+;; Solution 20-1
 ;;
+(defun forget-event (event)
+  (setf (event-time event) 'unknown)
+  (dolist (output-task (event-output-tasks event))
+    (forget-task output-task)))
+
+(defun forget-task (task)
+  (forget-event (task-output-event task)))
+
+(defun simulate (starting-event time)
+  (forget-event starting-event)
+  (setf *event-sequence* nil)
+  (simulate-event time starting-event)
+  (loop
+     (if (endp *event-sequence*)
+         (return 'done)
+         (eval (pop *event-sequence*)))))
+
 ;;
+;; Solution 20-2
+;;
+(defun revise-task-duration (task new-duration)
+  (setf (task-duration task) new-duration)
+  (forget-event (task-output-event task))
+  (setf *event-sequence* nil)
+  (simulate-task task)
+  (loop
+       (if (endp *event-sequence*)
+           (return 'done)
+           (eval (pop *event-sequence*)))))
+
+;;
+;; Solution 20-3
+;;
+(defmacro add-to-event-sequence (form)
+  `(setf *event-sequence*
+         (sort  (cons (list ',(first form)
+                            ,(second form)
+                            #'(lambda () ,form))
+                      *event-sequence*)
+                #'earlier-first-p)))
+
+(defun simulate-task (task)
+  (when (event-times-known-p (task-input-events task))
+    (let* ((start-time (latest-time (task-input-events task)))
+           (finish-time (+ (task-duration task) start-time)))
+      (add-to-event-sequence
+       (announce-start-time start-time (task-name task)))
+      (add-to-event-sequence
+       (announce-finish-time finish-time (task-name task)))
+      (add-to-event-sequence
+       (simulate-event finish-time (task-output-event task))))))
+
+(defun simulate (starting-event time)
+  (forget-event starting-event) ; added by kzfm1024
+  (setf *event-sequence* nil)
+  (simulate-event time starting-event)
+  (loop
+     (if (endp *event-sequence*)
+         (return 'done)
+         (funcall
+          (third
+           (pop *event-sequence*))))))
