@@ -42,50 +42,56 @@
 
 (define *hand* (make <hand> :name '*hand* :position '(0 6)))
 
-#|
-(defmethod block-support-for ((object basic-block))
-  nil)
+(define-method block-support-for ((object <basic-block>)) '())
 
-(defmethod put-on ((object movable-block) (support basic-block))
+(define-method put-on ((object <movable-block>) (support <basic-block>))
   (if (get-space object support)
       (and (grasp object)
            (move object support)
            (ungrasp object))
-      (format t "~&Sorry, there is no room for ~a on ~a."
+      (format #t "~&Sorry, there is no room for ~a on ~a."
               (block-name object)
               (block-name support))))
 
-(defmethod get-space ((object movable-block) (support basic-block))
+;; スペースがない場合は #f を返す
+(define-method get-space ((object <movable-block>) (support <basic-block>))
   (or (find-space object support)
       (make-space object support)))
 
-(defmethod grasp ((object movable-block))
-  (unless (eq (hand-grasping *hand*) object)
-    (when (block-support-for object) (clear-top object))
-    (when (hand-grasping *hand*)
+(define-method grasp ((object <movable-block>))
+  (unless (eq? (hand-grasping *hand*) object)
+    (when (not (null? (block-support-for object))) (clear-top object))
+    (when (not (null? (hand-grasping *hand*)))
       (get-rid-of (hand-grasping *hand*)))
-    (format t "~&Move hand to pick up ~a at location ~a."
+    (format #t "~&Move hand to pick up ~a at location ~a."
             (block-name object)
             (top-location object))
-    (setf (hand-position *hand*) (top-location object))
-    (format t "~&Grasp ~a." (block-name object))
-    (setf (hand-grasping *hand*) object))
-  t)
+    (set! (hand-position *hand*) (top-location object))
+    (format #t "~&Grasp ~a." (block-name object))
+    (set! (hand-grasping *hand*) object))
+  #t)
 
-(defmethod ungrasp ((object movable-block))
-  (when (block-supported-by object)
-    (format t "~&Ungrasp ~a." (block-name object))
-    (setf (hand-grasping *hand*) nil)
-    t))
+(define-method ungrasp ((object <movable-block>))
+  (when (not (null? (block-supported-by object)))
+    (format #t "~&Ungrasp ~a." (block-name object))
+    (set! (hand-grasping *hand*) '())
+    #t))
 
-(defmethod get-rid-of ((object movable-block))
+(define-method get-rid-of ((object <movable-block>))
   (put-on object table))
 
-(defmethod make-space ((object movable-block) (support basic-block))
-  (dolist (obstruction (block-support-for support))
-    (get-rid-of obstruction)
-    (let ((space (find-space object support)))
-      (when space (return space)))))
+;; スペースがない場合は #f を返す
+(define-method make-space ((object <movable-block>) (support <basic-block>))
+  (call/cc
+   (lambda (return)
+     (dolist (obstruction (block-support-for support))
+       (get-rid-of obstruction)
+       (let ((space (find-space object support)))
+         (when space (return space))))
+     #f)))
+
+#|
+
 
 (defmethod clear-top ((support load-bearing-block))
   (dolist (obstacle (block-support-for support) t)
