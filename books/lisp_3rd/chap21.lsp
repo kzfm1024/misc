@@ -19,7 +19,7 @@
 (defclass table (load-bearing-block) ())
 
 (defclass hand ()
-  ((name :accessor hand-position :initarg :name)
+  ((name :accessor hand-name :initarg :name)
    (position :accessor hand-position :initarg :position)
    (grasping :accessor hand-grasping :initform nil)))
 
