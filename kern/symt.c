@@ -1,4 +1,5 @@
 #include "kernel.h"
+#include <string.h>
 
 kernsym symtab[HASHTABSIZE];    /* symbol table */
 
@@ -12,7 +13,7 @@ int initsymtab()
 }
 
 /* the hash function */
-int hash(const char *name)
+int hash(char *name)
 {
     int hashaddr = 0;
 
@@ -22,7 +23,7 @@ int hash(const char *name)
 }
 
 /* add a symbol to the symbol table */
-kernsym addsym(const char *name)
+kernsym addsym(char *name)
 {
     int hashaddr = hash(name);
     int len;
@@ -58,7 +59,7 @@ kernsym addsym(const char *name)
 }
 
 /* find a symbol in the symbol table */
-kernsym findsym(const char *name)
+kernsym findsym(char *name)
 {
     kernsym sym = symtab[hash(name)];
     int cmp;
@@ -72,7 +73,7 @@ kernsym findsym(const char *name)
 }
 
 /* mkae a symbol object */
-kernsym mksym(const char *name)
+kernsym mksym(char *name)
 {
     kernsym sym = findsym(name);
 
@@ -90,7 +91,7 @@ kernsym mksym(const char *name)
 }
 
 /* make a temporary symbol */
-kernsym _mksym(const char *name)
+kernsym _mksym(char *name)
 {
     _tempsym->name = name;
     return _tempsym;
@@ -98,7 +99,7 @@ kernsym _mksym(const char *name)
 
 /* make a new symbol object */
 /* assumes that symbol is not already in the symbol table */
-kernsym newsym(const char *name, byte flag, kerncell bind)
+kernsym newsym(char *name, byte flag, kerncell bind)
 {
     kernsym sym;
 

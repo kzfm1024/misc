@@ -1,4 +1,4 @@
-#inclkude <stdio.h>
+#include <stdio.h>
 #define UNIX             YES
 /* scalar contents: */
 #define HASHTABSIZE      256    /* size of has table */
@@ -12,7 +12,7 @@
 #define STRBUFSIZE       126    /* size of string buffer */
 #define MAXCOLS           80    /* max no. of columns on the screen */
 #define SMALLINTLOW     -128    /* least small integer */
-#define SMALLINTHIGHT    127    /* greatest small integer */
+#define SMALLINTHIGH     127    /* greatest small integer */
 
 /* values for flag in symbol structure: */
 #define UNBOUND         0       /* unbound symbol */
@@ -84,7 +84,7 @@ struct channel {                /* I/O channel structure */
     unsigned short int len;     /* no. of chars in buf */
     char *buf;                  /* channel buffer */
     byte mode;                  /* one of INCHAN,OUTCHAN,INOUTCHAN */
-    FILE *file                  /* the file associated with channel */
+    FILE *file;                 /* the file associated with channel */
 };
 
 struct variable {               /* variable structure for variable stack */
@@ -205,7 +205,7 @@ typedef struct channel *iochan;   /* I/O channel */
     (ISint(xxx) ? xxx->CELLstr                                      \
      : (ISsym(xxx) ? CONVsym(xxx)->name                             \
         : CONVstr(error(yyy,err_str,xxx))))
-#define GETchan(yyy,xxx)                                                \
+#define GETchan(yyy,xxx) \
     (ISchan(xxx) ? xxx->CELLchan : CONVchan(error(yyy,err_chan1,xxx)))
 #define CHECKsym1(yyy,xxx) \
     if (xxx->flag >= VOID) error(yyy,err_sym1,xxx)
@@ -216,3 +216,58 @@ typedef struct channel *iochan;   /* I/O channel */
     if (xxx->flag < LISTOBJ) error(yyy,err_pair,xxx)
 #define CHECKlist(yyy,xxx) \
     if (xxx->flag < LISTOBJ && xxx != NIL) error(yyy,err_list,xxx)
+
+/*-------------------- external declarations --------------------*/
+extern char     *err_args, *err_pars;
+extern char     *err_evalstk, *eval_varstk, *err_argstk, *err_catstk;
+extern char     *err_memory, *err_list;
+extern char     *err_int, *err_real, *err_num, *err_str, *err_chan1, *err_chan2;
+extern char     *err_sym1, *err_sym2, *err_pair, *err_list, *err_var, *err_dom;
+extern kerncell catres;
+extern kerncell golabel;
+extern kerncell _tempstr;
+extern kerncell inchan, outchan, errchan;
+extern iochan   _inchan, _outchan, _errchan;
+extern char     strbuf[];
+extern struct variable varstk[];
+extern kerncell evalstk[], argstk[];
+extern int      evaltop, celltop, vartop, argtop, _argtop;
+extern kerncell read_and_eval, top_lev_call, top_lev_tags;
+extern int      (*org_interrupt)(); /* original interrupt handler */
+
+/* internals: */
+extern kernsym _bquotesym, _commasym, _atsym;
+extern kernsym _toptagsym, _errtagsym, _rettagsym, _gotagsym;
+extern kernsym _tempsym, _cxxrsym;
+
+/* constants: */
+extern kernsym nil, ttt, eofsym, inchansym, outchansym, errchansym;
+
+/* unbounds: */
+extern kernsym lamsym, vlamsym, ulamsym, mlamsym;
+
+/* symt.c: */
+extern kernsym addsym(char *name);
+extern kernsym findsym(char *name);
+extern kernsym mksym(char *name);
+extern kernsym _mksym(char *name);
+extern kernsym newsym(char *name, byte flag, kerncell bind);
+
+/* cellt.c: */
+extern char     *new(int size);
+extern void     initcelltab();
+extern kerncell freshcell();
+extern kerncell collectgarb();
+extern void     mark(kerncell obj);
+extern kerncell mkinum(int inum);
+extern kerncell mkrnum(real rnum);
+extern kerncell mkstr(char *str);
+extern kerncell _mkstr(char *str);
+extern kerncell mkchan(iochan chan);
+extern kerncell mkcell(kerncell head, kerncell tail);
+extern kerncell mkset(kerncell head, kerncell tail);
+
+
+
+/* FIXME */
+extern kerncell Lcxxr();

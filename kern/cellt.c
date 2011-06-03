@@ -1,5 +1,6 @@
 #include "kernel.h"
 #include <stdlib.h>             /* for malloc */
+#include <string.h>             /* for strlen */
 
 extern kernsym symtab[];
 kerncell celltab[CELLTABSIZE];  /* cell table */
@@ -91,7 +92,7 @@ kerncell freshcell()
 
 kerncell collectgarb()
 {
-    int i, cdix;
+    int i, cidx;
     kernsym entry;
     kerncell blockptr;
 
@@ -124,9 +125,9 @@ kerncell collectgarb()
     blockptr = celltab[0];
     for (i = 0; i < BLOCKSIZE; i++) /* unmark small integers */
         (blockptr++)->flag & MASK7;
-    for (cdix = 1; cidx < celltabsize; ++cdix) /* sweep */
+    for (cidx = 1; cidx < celltabsize; ++cidx) /* sweep */
     {
-        blockptr = celltab[cdix];
+        blockptr = celltab[cidx];
         for (i = 0; i < BLOCKSIZE; ++i)
         {
             if (ISmarked(blockptr)) /* cell in use? */
@@ -194,7 +195,7 @@ kerncell mkinum(int inum)
 {
     kerncell obj;
 
-    if (inum >= SMALLINTLOW && inum <= SMALLINTHIGHT)
+    if (inum >= SMALLINTLOW && inum <= SMALLINTHIGH)
         return inumblock + inum - SMALLINTLOW;
 
     obj = freshcell();
@@ -214,7 +215,7 @@ kerncell mkrnum(real rnum)
 }
 
 /* make a string object */
-kerncell mkstr(const char *str)
+kerncell mkstr(char *str)
 {
     kerncell obj = freshcell();
     char *newstr;
@@ -229,7 +230,7 @@ kerncell mkstr(const char *str)
 }
 
 /* make a temporary string object */
-kerncell _mkstr(const char *str)
+kerncell _mkstr(char *str)
 {
     _tempstr->CELLstr = str;
     return _tempstr;
