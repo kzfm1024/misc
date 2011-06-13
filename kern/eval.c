@@ -26,7 +26,7 @@ static void savevars(kerncell vars)
     {
         var = CONVsym(vars->CELLcar);
         /* NOTE: property lists are not stacked: */
-        VARpush(vars, var->flag, var->bind);
+        VARpush(var, var->flag, var->bind);
         var->flag = VARIABLE;
         vars = vars->CELLcdr;
     }
@@ -43,7 +43,7 @@ static void restorevars(kerncell vars)
 }
 
 /* evaluate expr */
-kerncell eval (kerncell expr)
+kerncell eval(kerncell expr)
 {
     if (ISsym(expr))
     {
@@ -65,12 +65,19 @@ kerncell eval (kerncell expr)
     }
 }
 
+typedef kerncell (*kernfun)(void);
+typedef kerncell (*kernfun_cxxr)(char*);
+
 /* evaluats a function call */
 kerncell evalcall(kerncell head, kerncell list, int stacked)
 /* stacked: non-zero when args are already stacked */
 {
     kerncell fox;
+#if 0
     kerncell (*fun)();
+#else
+    kernfun fun;
+#endif 
     int arg1;
 
 start:
@@ -110,23 +117,36 @@ start:
                 }
                 ARGpush(CONVcell(arg1)); /* push position of 1st arg */
             }
+#if 0
             fox = ((fun = CONVsym(head)->bind) != CONVcell(Lcxxr)
                    ? (*fun)()
                    : (*fun)(CONVsym(head)->name));
+#else
+            if (CONVsym(head)->bind != CONVcell(Lcxxr))
+            {
+                kernfun f = (kernfun)CONVsym(head)->bind;
+                fox = (*f)();
+            }
+            else
+            {
+                kernfun_cxxr f = (kernfun_cxxr)CONVsym(head)->bind;
+                fox = (*f)(CONVsym(head)->name);
+            }
+#endif
             if (!stacked)
                 ARGSpop();
             return fox;
         case UBINARY:
             fox = (stacked ? mkargslist() : list->CELLcdr);
             ARGpush(fox);
-            fun = CONVsym(head)->bind;
+            fun = (kernfun)CONVsym(head)->bind;
             fox = (*fun)();
             ARGpop();
             return fox;
         case MBINARY:
             fox = (stacked ? mkargslist() : list->CELLcdr);
             ARGpush(fox);
-            fun = CONVsym(head)->bind;
+            fun = (kernfun)CONVsym(head)->bind;
             fox = (*fun)();
             ARGpop();
             return eval(stacked
@@ -135,7 +155,7 @@ start:
                            ? (list->CELLcar = fox->CELLcar,
                               list->CELLcdr = fox->CELLcdr, list)
                            : (list->CELLcar = CONVcell(voidsym),
-                              list->CELLcdr = mkcell(fox, nil))));
+                              list->CELLcdr = mkcell(fox, (kerncell)nil))));
         } /* switch */
     }
     if (ISvector(fox = head) ||
@@ -241,7 +261,7 @@ kerncell expand(kerncell fun, kerncell list, int stacked)
 /* stacked: non-zero when args are already stacked */
 {
     kerncell fox, vars;
-    int ismacro = fun->CELLcar == CONVsym(mlamsym);
+    int ismacro = fun->CELLcar == (kerncell)CONVsym(mlamsym);
 
     fun = fun->CELLcdr;         /* drop ulam/mlam */
     if (!ISlist(vars = fun->CELLcar) || checkvars(vars) != 1)
@@ -266,7 +286,7 @@ kerncell expand(kerncell fun, kerncell list, int stacked)
                ? (list->CELLcar = fox->CELLcar,
                   list->CELLcdr = fox->CELLcdr, list)
                : (list->CELLcar = CONVcell(voidsym),
-                  list->CELLcdr = mkcell(fox, nil), list))
+                  list->CELLcdr = mkcell(fox, (kerncell)nil), list))
             : fox);
 }
 
@@ -275,10 +295,10 @@ kerncell evalvector(kerncell head, kerncell tail, int stacked)
 /* stacked: non-zero when args are already stacked */
 {
     kerncell index;
-    
+
     if (stacked
         ? (argtop - ARGidx1 != 1 || !ISint(index = ARGnum1))
-        : (tail == NIL || tail->CELLcdr != nil
+        : (tail == NIL || tail->CELLcdr != NIL
            || !ISint(index = eval(tail->CELLcar))))
         error(evalsym, "bad vector index", index);
 
@@ -300,9 +320,9 @@ kerncell mkargslist()
     while (argi < argtop)
     {
         if (arglist == NIL)
-            arglist = list = mkcell(argstk[argi++], nil);
+            arglist = list = mkcell(argstk[argi++], (kerncell)nil);
         else
-            list = list->CELLcdr = mkcell(argstk[argi++], nil);
+            list = list->CELLcdr = mkcell(argstk[argi++], (kerncell)nil);
     }
 
     return arglist;
@@ -323,7 +343,7 @@ kerncell Vcall()
     CHECKlargs(callsym, 1);
     fox = ARGnum1;              /* the function to be called */
     argstk[argtop] = CONVcell(CONVint(argstk[argtop]) + 1);
-    fox = evalcall(fox, nil, 1); /* do the call */
+    fox = evalcall(fox, (kerncell)nil, 1); /* do the call */
     argstk[argtop] = CONVcell(CONVint(argstk[argtop]) - 1);
     return fox;
 }
@@ -343,7 +363,7 @@ kerncell Lapply()
         arg2 = arg2->CELLcdr;
     }
     ARGpush(fox);
-    fox = evalcall(arg1, nil, 1);
+    fox = evalcall(arg1, (kerncell)nil, 1);
     ARGSpop();
     return fox;
 }

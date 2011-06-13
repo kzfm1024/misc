@@ -107,7 +107,7 @@ typedef struct channel *iochan;   /* I/O channel */
 #define ISvbin(p)               ((p)->flag == VBINARY)
 #define ISubin(p)               ((p)->flag == UBINARY)
 #define ISmbin(p)               ((p)->flag == MBINARY)
-#define ISinternal(p)           ((p)->flag == INTERANL)
+#define ISinternal(p)           ((p)->flag == INTERNAL)
 
 #define ISsym(p)                ((p)->flag <  VOID)
 #define IScell(p)               ((p)->flag >= VOID)
@@ -219,7 +219,7 @@ typedef struct channel *iochan;   /* I/O channel */
 
 /*-------------------- external declarations --------------------*/
 extern char     *err_args, *err_pars;
-extern char     *err_evalstk, *eval_varstk, *err_argstk, *err_catstk;
+extern char     *err_evalstk, *err_varstk, *err_argstk, *err_catstk;
 extern char     *err_memory, *err_list;
 extern char     *err_int, *err_real, *err_num, *err_str, *err_chan1, *err_chan2;
 extern char     *err_sym1, *err_sym2, *err_pair, *err_list, *err_var, *err_dom;
@@ -267,7 +267,20 @@ extern kerncell mkchan(iochan chan);
 extern kerncell mkcell(kerncell head, kerncell tail);
 extern kerncell mkset(kerncell head, kerncell tail);
 
-
+/* eval.c: */
+extern kernsym evalsym, callsym, applysym;
+extern kerncell eval(kerncell expr);
+extern kerncell evalcall(kerncell head, kerncell list, int stacked);
+extern kerncell evallam(kerncell lam, kerncell args, int stacked);
+extern kerncell evalvlam(kerncell vlam, kerncell args, int stacked);
+extern kerncell expand(kerncell fun, kerncell list, int stacked);
+extern kerncell evalvector(kerncell head, kerncell tail, int stacked);
+extern kerncell mkargslist();
+extern kerncell Leval();
+extern kerncell Vcall();
+extern kerncell Lapply();
 
 /* FIXME */
+extern kernsym quotesym;
+extern kernsym voidsym;
 extern kerncell Lcxxr();
