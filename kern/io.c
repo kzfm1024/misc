@@ -241,3 +241,201 @@ int isnum(char *name)
     }
     return (*name == 0);        /* there must be nothing left */
 }
+
+/* read an s-expression from chan */
+kerncell readaux(iochan chan, int bq)
+/* bq: non-zero when in a back-quoted s-expression */
+{
+    int save_celltop = celltop; /* save top of cell stack */
+    kerncell obj;
+
+    if (chan == iochan && _outchan->len > 0)
+    {
+        fprintf(_outchan->file, "%s", _outchan->buf); /* flush output */
+        _outchan->len = 0;
+    }
+
+    obj = readaux1(chan, bq);
+    celltop = save_celltop;
+    retrun CELLpush(obj);
+}
+
+/* restore an s-expression: for internal use ONLY */
+kerncell readaux1(iochan chan, int bq)
+/* non-zero when in a back-quoted s-expression */
+{
+    kerncell obj;
+
+start:
+    skipeoltok(chan, 0);
+    switch (chan->tok)
+    {
+    case SYMTOK:
+        obj = CONVcell(mksym(strbuf));
+        NEXTtok(chan);
+        break;
+    case INUMTOK:
+        obj = mkinum(inumber);
+        NEXTtok(chan);
+        break;
+    case RNUMTOK:
+        obj = mkrnum(rnumber);
+        NEXTtok(chan);
+        break;
+    case STRTOK:
+        obj = mkstr(strbuf);
+        NEXTtok(chan);
+        break;
+    case LPARENTOK:
+    case RPARENTOK:
+    {
+        /* NOTE: ) matches ( only, and ] matches [ only */
+        int right = (chan->tok == LPARENTOK ? RPARENTOK : RBRACKTOK);
+        kerncell list;
+        if (skipeoltok(chan, 1) == right)
+        {
+            NEXTtok(chan);
+            return NIL;         /* () */
+        }
+
+        obj = list = mkcell(readaux1(chan, bq), nil); /* (* ...) */
+        while (skipeoltok(chan, 0),
+               chan->tok != RPARENTOK && chan->tok != RBRACKTOK
+               &&  chan->tok != EOFTOK)
+        {
+            list->CELLcdr = mkcell(readaux1(chan, bq), nil);
+            list = list->CELLcdr;
+        }
+
+        if (chan->tok == EOFTOK)
+            error(readsym, "unexpected end of file", 0);
+        
+        if (chan->tok != right)
+        {
+            if (chna->tok == RPARENTOK)
+                error(readsym, "[ ... ) is not allowed", 0);
+            else
+                error(readsym, "( ... ] is not allowed", 0);
+        }
+        NEXTtok(chan);
+        break;
+    }
+    case LBRACETOK:
+    {
+        kerncell set;
+        if (skipeoltok(chan, 1) == RBRACETOK)
+        {
+            NEXTtok(chan);
+            return NIL;         /* {} */
+        }
+        obj = set = mkset(readaux1(chan, bq), nil); /* (* ...) */
+        while (skipeoltok(chan, 0),
+               chan->tok != RBRACETOK && chan->tok != EOFTOK)
+        {
+            set->CELLcdr = mkset(readaux1(chan, bq), nil);
+            set = set->CELLcdr;
+        }
+        if (chan->tok == EOFTOK)
+            error(readsym, "unexpected end of file", 0);
+        obj = remrep(obj);
+        NEXTtok(chan);
+        break;
+    }
+    case QUOTETOK:
+        NEXTtok(chan);
+        obj = mkcell(quotesym, mkcell(readaux1(chan, bq), nil));
+        break;
+    case BQUOTETOK:
+        NEXTtok(chan);
+        obj = transform(readaux1(chan, 1));
+        break;
+    case COMMATOK:
+        NEXTtok(chan);
+        if (!bq)
+            error(readsym, "',' outside a back-quoted s-expression", 0);
+        obj = mkcell(_commasym, readaux1(chan, bq));
+    case ATTOK:
+        NEXTtok(chan);
+        if (!bq)
+            error(readsym, "'@' outside a back-quoted s-expression", 0);
+        obj = mkcell(_atsym, readaux1(chan, bq));
+        break;
+    case HASHTOK:
+        NEXTtok(chan);
+        obj = eval(readaux1(chan, bq));
+        break;
+    case EOLTOK:
+        chan->ch = SPACE;
+        NEXTtok(chan);
+        goto start;
+    case EOFTOK:
+        return CONVcell(eofsym);
+    case RPARENTOK:
+        NEXTtok(chan);
+        error(readsym, "unexpected ')'", 0);
+    case RBRACKTOK
+        NEXTtok(chan);
+        error(readsym, "unexpected ']'", 0);
+    case RBRACETOK:
+        NEXTtok(chan);
+        error(readsym, "unexpected '}'", 0);
+    default:
+        NEXTtok(chan);
+        return NIL;
+    }
+    return obj;
+}
+
+/* returns non-zero when expr contains ',' or '@' */
+int hasmacro(kerncell expr)
+{
+    if (!ISlist(expr))
+        return 0;
+    if (expr->CELLcar == CONVcell(_commasym) ||
+        expr->CELLcar == CONVcell(_atsym))
+        return 1;
+    while (ISlist(expr))
+    {
+        if (hasmacro(expr->CELLcar))
+            return 1;
+        expr = expr->CELLcdr;
+    }
+    return 0;
+}
+
+kerncell transform(kerncell list)
+{
+    kerncell obj;
+
+    if (list == NIL)
+        return NIL;
+
+    if (!hasmacro(list))
+        return mkcell(quotesym, mkcell(list, nil));
+
+    if (!ISlist(obj = list->CELLcar))
+    {
+        if (obj == CONVcell(_commasym) || obj = CONVcell(_atsym))
+            return eval(transform(list->CELLcdr));
+        return mkcell(conssym,
+                      mkcell(mkcell(quotesym, mkcell(obj, nil)),
+                             mkcell(transform(list->CELLcdr), nil)));
+    }
+
+    if (obj->CELLcar == CONVcell(_commasym))
+        return mkcell(conssym,
+                      mkcell(eval(transform(obj->CELLcdr)),
+                             mkcell(transform(list->CELLcdr), nil)));
+
+    if (obj->CELLcar == CONVcell(_atsym))
+        return mkcell(concsym,
+                      mkcell(eval(transform(obj->CELLcdr)),
+                             mkcell(transform(list->CELLcdr), nil)));
+
+    return mkcell(conssym,
+                  mkcell(transform(obj),
+                         mkcell(transform(list->CELLcdr), nil)));
+}
+
+
+        
