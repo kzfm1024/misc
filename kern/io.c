@@ -403,6 +403,7 @@ int hasmacro(kerncell expr)
     return 0;
 }
 
+/* transform back-quoted s-expression */
 kerncell transform(kerncell list)
 {
     kerncell obj;
@@ -437,5 +438,159 @@ kerncell transform(kerncell list)
                          mkcell(transform(list->CELLcdr), nil)));
 }
 
+/* auxiliary */
+int printaux(int flag, kerncell expr, iochan chan, int max)
+{
+    if (ISsym(expr))            /* is expr a symbol? */
+        return bufprint((flag == PRINC && *CONVsym(expr)->name == '|'
+                         ? STRIP : flag),
+                        chan, "%s", CONVsym(expr)->name);
 
-        
+    switch (expr->flag)
+    {
+    case INTOBJ:
+        return bufprint(flag, chan, "%ld", expr->CELLinum);
+    case REALOBJ:
+        return bufprint(flag, chan, "%f", expr->CELLrnum);
+    case STROBJ:
+        return bufprint(flag, chan,
+                        (flag == PRINC ? "%s" : "\"%s\""),
+                        expr->CELLstr);
+    case CHANOBJ:
+        return bufprint(flag, chan, "<channel:%ld>", expr->CELLchan);
+    case VECTOROBJ:
+        return bufprint(flag, chan, "vector[%ld]",
+                        expr->CELLdim->CELLinum);
+    case LISTOBJ:
+        if (expr->CELLcar == CONVcell(quotesym))
+        {
+            bufprint(flag, chan, "'");
+            return  1 + printaux(flag, expr->CELLcdr->CELLcar, chan, max);
+        }
+    case SETOBJ:                /* handles lists and sets */
+    {
+        int size;
+        int oflag = expr->flag;
+        size = bufprint(flag, chan, (oflag == LISTOBJ ? "(" : "{"));
+        do
+        {
+            if (flag == LENGTH && size > max)
+                return size;
+            size += printaux(flag, expr->CELLcar, chan, max);
+            if ((expr = expr->CELLcdr) != NIL)
+            {
+                if (expr->flag != oflag)
+                {
+                    if (flag == LENGTH && size > max)
+                        return size;
+                    size += bufprint(flag, chan, " . ");
+                    size += printaux(flag, expr, chan, max);
+                    break;
+                }
+                else
+                {
+                    size += bufprint(flag, chan, " ");
+                }
+            }
+        } while (expr != NIL);
+        size += bufprint(flag, chan, (oflag == LISTOBJ) ? ")" : "}");
+        return size;
+    }
+    default:
+        return bufprint(flag, chan, "<@:%ld>", expr->CELLcar);
+    }
+}
+
+/* buffered print */
+int bufprint(int flag, iochan chan, char *format, word arg)
+{
+    static char outputbuf[CHANBUFSIZE + 2];
+    char *outbuf = outputbuf;
+
+    sprintf(outbuf, format, arg);
+    if (flag == LENGTH)
+    {
+        return strlen(outputbuf);
+    }
+    else if (flag == STRIP)     /* strip |symbol| to symbol */
+    {
+        ++outbuf;
+        *(outbuf + strlen(outbuf) - 1) = 0;
+    }
+
+    if (chan->len > 0)
+        --(chan->len);          /* get rid of the last null char */
+
+    do
+    {
+        *(chan->buf + chan->len++) = *outbuf;
+        if (*outbuf == EOL || chan->len > CHANBUFSIZE)
+        {
+            *(chan->buf + chan->len) = 0;
+            fprintf(chan->file, "%s", chan->buf);
+            chan->len = 0;
+            if (!*(outbuf + 1))
+                break;
+        }
+    } while (*outbuf++);
+    return strlen(outputbuf);
+}
+
+/* (open 'name 'mode) */
+kerncell Lopen()
+{
+    kerncell arg1 = ARGnum1;
+    kerncell arg2 = ARGnum2;
+
+    CHECKlargs(opensym, 2);
+    return openaux(GETstr(opensym, arg1), GETstr(opensym, arg2));
+}
+
+/* open a channel */
+kerncell openaux(char *name, char *mode)
+{
+    FILE *file;
+
+    if ((file = fopen(name, mode)) == NULL)
+        error(opensym, "can't open file", _mkstr(name));
+    
+    return mkchan(openchan(file,
+                           (*mode == 'r'
+                            ? (*++mode != 0 ? INOUTCHAN : INCHAN)
+                            : OUTCHAN)));
+}
+
+/* (close 'chan) */
+kerncell Lclose()
+{
+    kerncell arg = ARGnum1;
+
+    CHECKlargs(closesym, 1);
+    closechan(GETchan(closesym, arg));
+    arg->flag = VOID;
+    return TTT;
+}
+
+/* (flush ['chan]) */
+kerncell Vflush()
+{
+    kerncell arg;
+    iochan chan;
+
+    CHECKvargs2(flushsym, 1);
+    chan = (ARGidx1 == argtop
+            ? _outchan
+            : (arg = ARGnum1, GETchan(flushsym, arg)));
+
+    if (chan->len == 0)
+        return TTT;
+
+    if (chan->mode == OUTCHAN || chan->mode == INOUTCHAN)
+        bufprint(PRINT, chan, "\n");
+    else
+        chan->len = 0;
+
+    return TTT;
+}
+
+/* (read ['chan] */
