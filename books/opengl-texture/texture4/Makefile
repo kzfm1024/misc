@@ -11,4 +11,4 @@ trackball.o: trackball.h
 box.o: box.h
 
 clean:
-	-rm -f $(TARGETS) *.o *~
+	-rm -f $(TARGETS) *.o *.pyc *~

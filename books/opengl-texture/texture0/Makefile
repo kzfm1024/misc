@@ -10,4 +10,4 @@ main.o: trackball.h
 trackball.o: trackball.h
 
 clean:
-	-rm -f $(TARGETS) *.o *~
+	-rm -f $(TARGETS) *.o *.pyc *~
