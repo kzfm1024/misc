@@ -53,9 +53,6 @@ def init():
     glLightfv(GL_LIGHT0, GL_SPECULAR, lightcol)
     glLightfv(GL_LIGHT0, GL_AMBIENT, lightamb)
 
-    #glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP)
-    #glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP)
-
 def scene():
     color = [ 1.0, 1.0, 1.0, 1.0 ]
     glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, color)
@@ -63,6 +60,7 @@ def scene():
     glEnable(GL_ALPHA_TEST)
     glEnable(GL_TEXTURE_2D)
 
+    """
     glNormal3d(0.0, 0.0, 1.0)
     glBegin(GL_QUADS)
     glTexCoord2d(0.0, 1.0)
@@ -74,6 +72,10 @@ def scene():
     glTexCoord2d(0.0, 0.0)
     glVertex3d(-1.6,  0.9,  0.0)
     glEnd()
+    """
+
+    #glutSolidSphere(1, 50, 50)
+    glutWireSphere(2, 100, 100)
 
     glDisable(GL_TEXTURE_2D)
     glDisable(GL_ALPHA_TEST)
@@ -83,7 +85,8 @@ def display():
     glLoadIdentity()
     glLightfv(GL_LIGHT0, GL_POSITION, lightpos)
     
-    glTranslated(0.0, 0.0, -3.0) # 視点の移動（物体の方を奥に移動）
+    #glTranslated(0.0, 0.0, -3.0) # 視点の移動（物体の方を奥に移動）
+    #glTranslated(0.0, 0.0, -1.0) # 視点の移動（物体の方を奥に移動）
     glMultMatrixd(trackballRotation()) # トラックボール処理による回転
   
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -127,7 +130,8 @@ def motion(x, y):
 def main(options, args):
     glutInit(sys.argv)
     glutInitDisplayMode(GLUT_RGBA | GLUT_DEPTH | GLUT_DOUBLE)
-    glutInitWindowSize(960, 480)
+    #glutInitWindowSize(960, 480)
+    glutInitWindowSize(800, 800)
     glutInitWindowPosition(0, 0)
     glutCreateWindow(sys.argv[0])
     glutDisplayFunc(display)
