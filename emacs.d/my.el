@@ -1,3 +1,9 @@
+;;; スクロールバーを右側に表示する
+(set-scroll-bar-mode 'right)
+
+;;; 起動時の画面はいらない
+(setq inhibit-startup-message t)
+
 (global-set-key "\e-" 'goto-line)
 (global-set-key "\e=" 'what-line)
 (global-set-key "\C-x\C-a" 'shell)
@@ -7,7 +13,8 @@
 ;;;
 ;;; C & C++
 ;;;
-(setq-default tab-width 4 indent-tabs-mode nil)
+;(setq-default tab-width 4 indent-tabs-mode nil)
+(setq-default tab-width 4)
 (add-hook 'c-mode-common-hook '(lambda () (c-set-style "Stroustrup")))
 
 ;;;
@@ -93,25 +100,8 @@
 (put 'with-locking-mutex 'scheme-indent-function 1)
 (put 'guard 'scheme-indent-function 1)
 
-(put 'map-for 'scheme-indent-function 1)
-(put 'for 'scheme-indent-function 1)
-;; (put 'string-for 'scheme-indent-function 1)
-(put 'do-map 'scheme-indent-function 1)
-(put 'do-every 'scheme-indent-function 1)
-(put 'do-any 'scheme-indent-function 1)
-(put 'block 'scheme-indent-function 1)
-
 ;;
 ;; SBCL
 ;;
-(add-to-list 'load-path "~/elisp/slime/")  ; your SLIME directory
-(setq inferior-lisp-program "/usr/bin/sbcl") ; your Lisp system
-(require 'slime)
-(slime-setup)
-
-;;
-;; Prolog
-;;
-(setq auto-mode-alist
-  (cons (cons "\\.pl" 'prolog-mode)
-     auto-mode-alist))
+(setq inferior-lisp-program "sbcl")
+;(setq auto-mode-alist (cons '("\\.lsp$" . lisp-mode) auto-mode-alist))

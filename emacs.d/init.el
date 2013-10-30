@@ -14,17 +14,15 @@
 ;; (setq load-path (append '("~/lib/emacs") load-path))
 
 ;;; 以下、オプションにて手作業で加えた部分
-;;; スクロールバーを右側に表示する
-(set-scroll-bar-mode 'right)
 
 ;;; 時刻を表示する
-(display-time)
+;(display-time)
 
 ;;; 行番号を表示する
-(line-number-mode t)
+;(line-number-mode t)
 
 ;;; 起動時の画面はいらない
-(setq inhibit-startup-message t)
+;(setq inhibit-startup-message t)
 
 ;;; anthyをロード(anthy-elをインストールする必要あり)
 ;(load-library "anthy")
@@ -37,7 +35,7 @@
 
 ;;; ファイルオープン時に、ファイルダイアログを表示させずに、
 ;;; ミニバッファにて入力できるようにする
-(setq use-file-dialog nil)
+;(setq use-file-dialog nil)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; X 版 Emacs のフォント/カラー設定
@@ -47,20 +45,26 @@
 ;(if (>= emacs-major-version 23)
 ;    (cond (window-system
 ;           (setq initial-frame-alist
-;		 (append (list
-;			  '(width . 40)
-;			  '(height . 35)
-;			  '(top . 0)
-;			  '(left . 0)
-;			  )
-;			 initial-frame-alist)
-;		 )
-;	   (setq default-frame-alist initial-frame-alist)
-;	   )))
+;				 (append (list
+;						  '(width . 80)
+;						  '(height . 50)
+;						  '(top . 0)
+;						  '(left . 0)
+;						  )
+;						 initial-frame-alist)
+;				 )
+;		   (setq default-frame-alist initial-frame-alist)
+;		   )))
 
-(load "~/.emacs.d/faces.el")
+;(load "~/.emacs.d/faces.el")
 
-;;; オプションにて手作業で加えた部分ここまで
+;; オプションにて手作業で加えた部分ここまで
+(if window-system
+	(progn
+	  ;(set-background-color "#333366")         ;; 標準の背景色
+	  (set-face-background 'default "#333366") ;; 標準の背景色
+	  (set-face-foreground 'default "white"))   ;; 標準の文字色
+  )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; （旧版）ユーザ用初期化ファイル
