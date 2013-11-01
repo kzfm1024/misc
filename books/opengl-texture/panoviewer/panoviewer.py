@@ -21,10 +21,6 @@ import Image
 from sphere import *
 from trackball import *
 
-lightpos = [ 0.0, 0.0, 1.0, 0.0 ] # 位置
-lightcol = [ 1.0, 1.0, 1.0, 1.0 ] # 直接光強度
-lightamb = [ 0.1, 0.1, 0.1, 1.0 ] # 環境光強度
-
 FOVY = 66.0 # defined in MultiCameraRenderer.ini
 MCR_USER_VIEW_NEAR_PLANE = 0.01
 MCR_USER_VIEW_FAR_PLANE  = 1000.0
@@ -51,12 +47,6 @@ def init(filename):
     glEnable(GL_DEPTH_TEST)
     glDisable(GL_CULL_FACE)
   
-    glEnable(GL_LIGHTING)
-    glEnable(GL_LIGHT0)
-    glLightfv(GL_LIGHT0, GL_DIFFUSE, lightcol)
-    glLightfv(GL_LIGHT0, GL_SPECULAR, lightcol)
-    glLightfv(GL_LIGHT0, GL_AMBIENT, lightamb)
-
 def scene():
     global RADIUS
     global SLICES
@@ -85,7 +75,7 @@ def scene():
 def display():
     glMatrixMode(GL_MODELVIEW)
     glLoadIdentity()
-    glLightfv(GL_LIGHT0, GL_POSITION, lightpos)
+#    glLightfv(GL_LIGHT0, GL_POSITION, lightpos)
     
     #glTranslated(0.0, 0.0, -5.0) # 視点の移動（物体の方を奥に移動）
     glMultMatrixd(trackballRotation()) # トラックボール処理による回転
