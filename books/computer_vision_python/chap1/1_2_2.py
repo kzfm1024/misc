@@ -10,6 +10,3 @@ axis('off')
 figure()
 hist(im.flatten(), 128)
 show()
-
-
-
