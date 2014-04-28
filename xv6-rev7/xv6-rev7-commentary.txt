@@ -1,0 +1,69 @@
+# basic headers
+[types.h]
+uint, ushort, uchar, pde_t の typedef 宣言
+
+[param.h]
+最大プロセス数、最大オープンファイル数などの定義
+
+[memlayout.h]
+メモリレイアウトのアドレス定義
+V2P(), P2V(), V2P_WO(), P2V_WO() マクロの定義
+
+[defs.h]
+カーネルで使用される関数の宣言
+
+[x86.h]
+x86 命令のインライン関数の定義
+
+[asm.h]
+x86 セグメントを作成するためにアセンブラマクロ
+
+[mmu.h]
+x86 memory management unit (MMU) 関連の定義
+
+[elf.h]
+ELF フォーマットの定義
+
+
+# file system
+[buf.h]
+ブロックデバイスのバッファ
+
+[fcntl.h]
+O_RDONLY などの open() の引数定義
+
+[stat.h]
+stat 構造体の定義
+
+[fs.h]
+スーパーブロックの定義
+ディスク上の inode 構造体 dinode の定義
+ディレクトリエントリ構造体 dirent の定義
+
+[file.h]
+file 構造体の定義
+メモリ上の inode 構造体の定義
+メジャー番号からデバイスの読み書き関数のマッピングする構造体 devsw の定義
+
+[ide.c]
+IDE 関数 idewait(), ideinit(), idestart(), ideintr(), iderw()
+
+[bio.c]
+バッファキャッシュ binit(), bget(), bwrite(), brelse()
+
+[log.c]
+ロギング関数
+
+[fs.c]
+
+[file.c]
+
+[sysfile.c]
+ファイルシステムのシステムコール
+
+[exec.c]
+exec() 関数
+
+# pipes
+[pipe.c]
+パイプ関数
