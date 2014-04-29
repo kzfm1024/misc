@@ -25,6 +25,30 @@ x86 memory management unit (MMU) 関連の定義
 ELF フォーマットの定義
 
 
+# entering xv6
+[entry.S]
+main() を呼び出す
+
+[entryother.S]
+??
+
+[main.c]
+main() 関数
+
+# locks
+[spinlock.h]
+スピンロック構造体 spinlock 定義
+
+[spinlock.c]
+
+# processes
+[vm.c]
+[proc.h]
+[proc.c]
+[swtch.S]
+[kalloc.c]
+
+
 # file system
 [buf.h]
 ブロックデバイスのバッファ
@@ -37,8 +61,8 @@ stat 構造体の定義
 
 [fs.h]
 スーパーブロックの定義
-ディスク上の inode 構造体 dinode の定義
-ディレクトリエントリ構造体 dirent の定義
+dinode 構造体  の定義(ディスク上の inode)
+ディレクトリエントリ dirent 構造体 の定義
 
 [file.h]
 file 構造体の定義
@@ -49,14 +73,25 @@ file 構造体の定義
 IDE 関数 idewait(), ideinit(), idestart(), ideintr(), iderw()
 
 [bio.c]
-バッファキャッシュ binit(), bget(), bwrite(), brelse()
+デバイスブロックバッファ binit(), bget(), bwrite(), brelse()
+- binit()
+bcache 構造体の spinlock 初期化
+bcache 構造体のデバイスブロックバッファのリスト初期化
+
+
 
 [log.c]
 ロギング関数
 
 [fs.c]
+ファイルシステム本体
+- iinit()
+icache 構造体の spinlock 初期化　
 
 [file.c]
+ファイルディスクリプタ
+- fileinit()
+ftable 構造体の spinlock 初期化
 
 [sysfile.c]
 ファイルシステムのシステムコール
@@ -67,3 +102,9 @@ exec() 関数
 # pipes
 [pipe.c]
 パイプ関数
+
+---------------------------------------------------------------------------
+
+
+allocproc
+
