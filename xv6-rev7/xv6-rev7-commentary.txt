@@ -40,12 +40,17 @@ main() 関数
 スピンロック構造体 spinlock 定義
 
 [spinlock.c]
+スピンロック関数
 
 # processes
 [vm.c]
+
 [proc.h]
+
 [proc.c]
+
 [swtch.S]
+
 [kalloc.c]
 
 
