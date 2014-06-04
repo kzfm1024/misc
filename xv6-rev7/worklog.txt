@@ -12,3 +12,14 @@ $ ddd
 [2014/4/29]
 xv-rev7-commentary.txt 作成開始
 gdb で動作を確認しながら各ファイルをつまみ読み
+
+[2014/6/3]
+bio.c の動作を gdb で確認
+
+[2014/6/4]
+buf.h, binit のコメント記述
+
+[2014/6/5]
+bget, bread, bwrite, brelse のコメント記述
+
+
