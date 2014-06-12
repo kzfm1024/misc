@@ -25,3 +25,8 @@ bget, bread, bwrite, brelse のコメント記述
 [2014/6/6]
 log.c の動作を gdb で確認
 logheader, log のコメント記述
+
+[2014/6/7]
+initlog, begin_trans, commit_trans のコメント記述
+balloc を読む
+
