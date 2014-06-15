@@ -30,3 +30,10 @@ logheader, log のコメント記述
 initlog, begin_trans, commit_trans のコメント記述
 balloc を読む
 
+[2014/6/14]
+log_write のコメント記述
+balloc のコメントを途中まで記述
+
+[2014/6/15]
+balloc, bfree のコメント記述
+
