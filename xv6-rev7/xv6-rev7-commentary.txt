@@ -242,36 +242,11 @@ B_DIRTY フラグを立ててブロックが再利用されないようにする
 
 ---------------------------------------------------------------------------
 [fs.h ]
-
-BSIZE
-
-#define BSIZE 512  // block size
-
-sizeof(struct dinode) --> 64 bytes
-
-#define ROOTINO 1  // root i-number
-
-
-// Inodes per block.
-#define IPB           (BSIZE / sizeof(struct dinode)) --> 8 個
-
-// Block containing inode i
-#define IBLOCK(i)     ((i) / IPB + 2)
-
-i の inode を含むブロック番号を返すマクロ
-
-
-// Bitmap bits per block
-#define BPB           (BSIZE*8)　-> 4096 ビット
-
-
-
-// Block containing bit for block b
-#define BBLOCK(b, ninodes) (b/BPB + (ninodes)/IPB + 3)
-
-b/BPB 
-(ninodes)/IPB -> inode ブロックをスキップ
-boot sector, 
+superblock 構造体 (3664)
+size    - ファイルシステムのブロック数
+nblocks - data 領域のブロック数
+ninodes - inode 数
+nlog    - log 領域のブロック数
 
 スーパーブロックの中身
 (gdb) p sb
@@ -283,6 +258,26 @@ block    2 -   27 : inode blocks  (25 = ninodes / IPB)
 block   28        : bitmap (BBLOCK マクロで求められる)
 block   29 - 1013 : data
 block 1014 - 1023 : log
+
+dinode 構造体 (3676)
+ディスク上の inode の構造体
+sizeof(dinode) は 64 なので IPB は 8
+type    - T_DIR, T_FILE, T_DEV がセットされる。stat.h で定義されている。
+major   - デバイスのメジャー番号
+minor   - デバイスのマイナー番号
+nlink   - ファイルへのリンク数
+addrs[] - data 領域のブロック番号
+
+IBLOCK (3689)
+inode を含むブロック番号を返すマクロ
+#define IBLOCK(i)     ((i) / IPB + 2)
+  + 2 で boot, superblock をスキップする。
+
+BBLOCK (3695)
+ブロック番号のビットを含む bitmap 領域のブロック番号を返すマクロ
+#define BBLOCK(b, ninodes) (b/BPB + (ninodes)/IPB + 3)
+  (ninodes)/IPB -> inode ブロックをスキップ  
+  + 3 で boot, superblock, inode ブロックをスキップする。
 
 [fs.c]
 balloc (4454)
