@@ -39,3 +39,6 @@ balloc, bfree のコメント記述
 
 [2014/6/20]
 ialloc のコメント記述
+
+[2014/6/23]
+iupdate, iget, ilock, iunlock, iput, inulockput のコメントを記述
