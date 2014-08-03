@@ -1,7 +1,7 @@
 from PIL import Image
 from pylab import *
 
-im = array(Image.open('baboon.jpg'))
+im = array(Image.open('../data/baboon.jpg'))
 imshow(im)
 
 x = [100,100,400,400]
