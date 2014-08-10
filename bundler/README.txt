@@ -26,3 +26,5 @@ $ git clone https://github.com/snavely/bundler_sfm.git
 $ cd bundler_sfm
 $ make
 
+
+$ sudo apt-get install jhead
