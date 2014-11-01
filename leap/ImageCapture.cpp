@@ -30,20 +30,12 @@ private:
 	void saveRawImage(const char*, const char*, int);
 };
 
-const std::string fingerNames[] = {"Thumb", "Index", "Middle", "Ring", "Pinky"};
-const std::string boneNames[] = {"Metacarpal", "Proximal", "Middle", "Distal"};
-const std::string stateNames[] = {"STATE_INVALID", "STATE_START", "STATE_UPDATE", "STATE_END"};
-
 void SampleListener::onInit(const Controller& controller) {
 	std::cout << "Initialized" << std::endl;
 }
 
 void SampleListener::onConnect(const Controller& controller) {
 	std::cout << "Connected" << std::endl;
-	controller.enableGesture(Gesture::TYPE_CIRCLE);
-	controller.enableGesture(Gesture::TYPE_KEY_TAP);
-	controller.enableGesture(Gesture::TYPE_SCREEN_TAP);
-	controller.enableGesture(Gesture::TYPE_SWIPE);
 }
 
 void SampleListener::onDisconnect(const Controller& controller) {
