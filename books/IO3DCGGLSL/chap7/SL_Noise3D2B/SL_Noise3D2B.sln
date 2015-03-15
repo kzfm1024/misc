@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SL_Noise3D2B", "SL_Noise3D2B.vcproj", "{27BE12E8-2B50-4D98-9F3A-EBA4883B2F3B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{27BE12E8-2B50-4D98-9F3A-EBA4883B2F3B}.Debug|Win32.ActiveCfg = Debug|Win32
+		{27BE12E8-2B50-4D98-9F3A-EBA4883B2F3B}.Debug|Win32.Build.0 = Debug|Win32
+		{27BE12E8-2B50-4D98-9F3A-EBA4883B2F3B}.Release|Win32.ActiveCfg = Release|Win32
+		{27BE12E8-2B50-4D98-9F3A-EBA4883B2F3B}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
