@@ -1,0 +1,6 @@
+cmake_minimum_required(VERSION 2.8)
+project(glColorSpace)
+set(CMAKE_CXX_FLAGS "-g")
+#include_directories(.)
+add_executable(slColorSpace2 slColorSpace2.cpp)
+target_link_libraries(slColorSpace2 GLEW glut GLU GL m)
