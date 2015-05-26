@@ -1,0 +1,6 @@
+cmake_minimum_required(VERSION 2.8)
+project(slPhong)
+set(CMAKE_CXX_FLAGS "-g")
+#include_directories(.)
+add_executable(slPhong slPhong.cpp)
+target_link_libraries(slPhong GLEW glut GLU GL m)
