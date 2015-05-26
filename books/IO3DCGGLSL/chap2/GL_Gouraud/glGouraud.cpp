@@ -11,7 +11,7 @@ Microsoft Visual Studio .NET2005 Standard Edition
 #include <stdio.h>
 #include <GL/glut.h>
 #include <math.h>
-#define M_PI 3.14159265358979
+//#define M_PI 3.14159265358979
 
 //関数のプロトタイプ宣言
 void init();
