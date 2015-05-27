@@ -1,0 +1,6 @@
+cmake_minimum_required(VERSION 2.8)
+project(slShadow)
+set(CMAKE_CXX_FLAGS "-g")
+#include_directories(.)
+add_executable(slShadow slShadow.cpp)
+target_link_libraries(slShadow GLEW glut GLU GL m)
