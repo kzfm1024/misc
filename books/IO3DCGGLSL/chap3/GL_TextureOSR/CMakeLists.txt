@@ -1,0 +1,6 @@
+cmake_minimum_required(VERSION 2.8)
+project(glTextureOSR)
+set(CMAKE_CXX_FLAGS "-g")
+include_directories(.)
+add_executable(glTextureOSR glTextureOSR.cpp)
+target_link_libraries(glTextureOSR glut GLU GL m)
