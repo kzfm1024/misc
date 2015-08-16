@@ -1,0 +1,6 @@
+cmake_minimum_required(VERSION 2.8)
+project(slCubeReflect2)
+set(CMAKE_CXX_FLAGS "-g")
+include_directories(.)
+add_executable(slCubeReflect2 slCubeReflect2.cpp)
+target_link_libraries(slCubeReflect2 GLEW glut GLU GL m)

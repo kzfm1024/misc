@@ -10,12 +10,13 @@ Microsoft Visual Studio .NET2005 Standard Edition
 OpenGL+GLSL
 */
 #include <stdio.h>
-#include <windows.h>
+//#include <windows.h>
 #include <GL/glew.h>
 #include <GL/glut.h>
 #include "../../myPrimitive2.h"
 #include "../../room2.h"
 #include "../../myGlsl.h"
+#include <time.h> // for clock_gettime()
 
 //関数のプロトタイプ宣言
 void init();
@@ -243,6 +244,15 @@ void setCubeMap()
   glTexParameteri(GL_TEXTURE_CUBE_MAP,GL_TEXTURE_WRAP_R,GL_REPEAT);
   glTexParameteri(GL_TEXTURE_CUBE_MAP,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
   glTexParameteri(GL_TEXTURE_CUBE_MAP,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+}
+
+static double timeGetTime()
+{
+	struct timespec tp;
+	clock_gettime(CLOCK_REALTIME, &tp);
+	double msec = (double)tp.tv_sec * 1000.0 + (double)tp.tv_nsec / 1000.0;
+	printf("%s: msec %f\n", __FUNCTION__, msec);
+	return msec;
 }
 
 void display(void)
