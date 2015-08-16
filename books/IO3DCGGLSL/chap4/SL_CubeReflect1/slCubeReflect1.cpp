@@ -16,7 +16,7 @@ OpenGL+GLSL
 #include "../../myGlsl.h"
 #include "../../imageLoadSave.h"
 #include <math.h>
-#define M_PI 3.14159265358979
+//#define M_PI 3.14159265358979
 
 //関数のプロトタイプ宣言
 void init();
