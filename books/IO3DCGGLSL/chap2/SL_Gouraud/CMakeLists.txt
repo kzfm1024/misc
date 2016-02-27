@@ -1,0 +1,6 @@
+cmake_minimum_required(VERSION 2.8)
+project(slGouraud)
+set(CMAKE_CXX_FLAGS "-g")
+#include_directories(.)
+add_executable(slGouraud slGouraud.cpp)
+target_link_libraries(slGouraud GLEW glut GLU GL m)

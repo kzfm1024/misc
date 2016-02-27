@@ -1,0 +1,6 @@
+cmake_minimum_required(VERSION 2.8)
+project(slAttenuation)
+set(CMAKE_CXX_FLAGS "-g")
+#include_directories(.)
+add_executable(slAttenuation slAttenuation.cpp)
+target_link_libraries(slAttenuation GLEW glut GLU GL m)

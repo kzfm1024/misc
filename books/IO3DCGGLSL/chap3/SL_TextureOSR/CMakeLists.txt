@@ -1,0 +1,6 @@
+cmake_minimum_required(VERSION 2.8)
+project(slTextureOSR)
+set(CMAKE_CXX_FLAGS "-g")
+include_directories(.)
+add_executable(slTextureOSR slTextureOSR.cpp)
+target_link_libraries(slTextureOSR GLEW glut GLU GL m)

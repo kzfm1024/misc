@@ -1,0 +1,6 @@
+cmake_minimum_required(VERSION 2.8)
+project(slColorMap)
+set(CMAKE_CXX_FLAGS "-g")
+include_directories(.)
+add_executable(slColorMap slColorMap.cpp)
+target_link_libraries(slColorMap GLEW glut GLU GL m)

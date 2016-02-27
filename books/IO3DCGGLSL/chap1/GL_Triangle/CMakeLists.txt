@@ -1,0 +1,6 @@
+cmake_minimum_required(VERSION 2.8)
+project(glTriangle)
+set(CMAKE_CXX_FLAGS "-g")
+#include_directories(.)
+add_executable(glTriangle glTriangle.cpp)
+target_link_libraries(glTriangle glut GLU GL m)

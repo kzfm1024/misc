@@ -1,0 +1,6 @@
+cmake_minimum_required(VERSION 2.8)
+project(slMultiTex)
+set(CMAKE_CXX_FLAGS "-g")
+include_directories(.)
+add_executable(slMultiTex slMultiTex.cpp)
+target_link_libraries(slMultiTex GLEW glut GLU GL m)

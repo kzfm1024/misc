@@ -1,0 +1,6 @@
+cmake_minimum_required(VERSION 2.8)
+project(slTextureFBO)
+set(CMAKE_CXX_FLAGS "-g")
+include_directories(.)
+add_executable(slTextureFBO slTextureFBO.cpp)
+target_link_libraries(slTextureFBO GLEW glut GLU GL m)

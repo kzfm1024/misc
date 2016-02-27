@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SL_ReflectBump", "SL_ReflectBump.vcproj", "{B0F4035E-3408-4CEF-9F49-5B571E9FF7BF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B0F4035E-3408-4CEF-9F49-5B571E9FF7BF}.Debug|Win32.ActiveCfg = Debug|Win32
+		{B0F4035E-3408-4CEF-9F49-5B571E9FF7BF}.Debug|Win32.Build.0 = Debug|Win32
+		{B0F4035E-3408-4CEF-9F49-5B571E9FF7BF}.Release|Win32.ActiveCfg = Release|Win32
+		{B0F4035E-3408-4CEF-9F49-5B571E9FF7BF}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
