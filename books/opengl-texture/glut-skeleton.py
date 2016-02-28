@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 import sys
@@ -68,7 +68,8 @@ def resize(w, h):
     gluPerspective(60.0, float(w)/float(h), 1.0, 100.0)
 
 def keyboard(key, x, y):
-    if key == '\033' or key == 'q' or key == 'Q': # ESC or q or Q
+#    if key == '\033' or key == 'q' or key == 'Q': # ESC or q or Q for python2
+    if key == b'\x1b' or key == b'q' or key == b'Q': # ESC or q or Q
         sys.exit()
     else:
         print(key)
