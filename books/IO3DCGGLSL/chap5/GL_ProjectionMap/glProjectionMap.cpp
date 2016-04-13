@@ -8,12 +8,13 @@ Microsoft Visual Studio .NET2005 Standard Edition
 投影マッピング
 OpenGL only（固定シェーダ）
 */
-#include <windows.h>
+//#include <windows.h>
 #include <stdio.h>
 #include <GL/glut.h>
 #include "../../imageLoadSave.h"
 #include <math.h>
-#define M_PI 3.14159265358979323846
+//#define M_PI 3.14159265358979323846
+#include <time.h> // for clock_gettime()
 
 //関数のプロトタイプ宣言
 void init();
@@ -247,6 +248,15 @@ void setTexture()
 		glTexGenfv(GL_R, GL_EYE_PLANE, param[2]);
 		glTexGenfv(GL_Q, GL_EYE_PLANE, param[3]);
 	}
+}
+
+static double timeGetTime()
+{
+	struct timespec tp;
+	clock_gettime(CLOCK_REALTIME, &tp);
+	double msec = (double)tp.tv_sec * 1000.0 + (double)tp.tv_nsec / 1000.0;
+	printf("%s: msec %f\n", __FUNCTION__, msec);
+	return msec;
 }
 
 void display(void)

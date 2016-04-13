@@ -1,0 +1,6 @@
+cmake_minimum_required(VERSION 2.8)
+project(glProjectionMap)
+set(CMAKE_CXX_FLAGS "-g")
+include_directories(.)
+add_executable(glProjectionMap glProjectionMap.cpp)
+target_link_libraries(glProjectionMap GLEW glut GLU GL m)

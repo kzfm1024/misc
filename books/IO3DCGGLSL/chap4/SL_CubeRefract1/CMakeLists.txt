@@ -1,0 +1,6 @@
+cmake_minimum_required(VERSION 2.8)
+project(slCubeRefract1)
+set(CMAKE_CXX_FLAGS "-g")
+include_directories(.)
+add_executable(slCubeRefract1 slCubeRefract1.cpp)
+target_link_libraries(slCubeRefract1 GLEW glut GLU GL m)
