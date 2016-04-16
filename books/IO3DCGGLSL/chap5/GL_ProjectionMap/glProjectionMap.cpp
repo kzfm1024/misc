@@ -8,7 +8,6 @@ Microsoft Visual Studio .NET2005 Standard Edition
 投影マッピング
 OpenGL only（固定シェーダ）
 */
-//
 #ifdef __linux__
 #include <time.h> // for clock_gettime()
 #else
