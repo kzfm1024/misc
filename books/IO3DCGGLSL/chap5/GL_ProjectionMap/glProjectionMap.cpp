@@ -8,13 +8,17 @@ Microsoft Visual Studio .NET2005 Standard Edition
 投影マッピング
 OpenGL only（固定シェーダ）
 */
-//#include <windows.h>
+//
+#ifdef __linux__
+#include <time.h> // for clock_gettime()
+#else
+#include <windows.h>
+#define M_PI 3.14159265358979323846
+#endif
 #include <stdio.h>
 #include <GL/glut.h>
 #include "../../imageLoadSave.h"
 #include <math.h>
-//#define M_PI 3.14159265358979323846
-#include <time.h> // for clock_gettime()
 
 //関数のプロトタイプ宣言
 void init();
@@ -250,6 +254,7 @@ void setTexture()
 	}
 }
 
+#ifdef __linux__
 static double timeGetTime()
 {
 	struct timespec tp;
@@ -258,6 +263,7 @@ static double timeGetTime()
 	printf("%s: msec %f\n", __FUNCTION__, msec);
 	return msec;
 }
+#endif
 
 void display(void)
 {
