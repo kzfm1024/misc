@@ -1,0 +1,6 @@
+cmake_minimum_required(VERSION 2.8)
+project(glShadowMap)
+set(CMAKE_CXX_FLAGS "-g")
+include_directories(.)
+add_executable(glShadowMap glShadowMap.cpp)
+target_link_libraries(glShadowMap GLEW glut GLU GL m)

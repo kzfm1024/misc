@@ -1,0 +1,6 @@
+cmake_minimum_required(VERSION 2.8)
+project(slFresnel)
+set(CMAKE_CXX_FLAGS "-g")
+include_directories(.)
+add_executable(slFresnel slFresnel.cpp)
+target_link_libraries(slFresnel GLEW glut GLU GL m)

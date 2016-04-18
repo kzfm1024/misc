@@ -8,14 +8,18 @@ Microsoft Visual Studio .NET2005 Standard Edition
 投影マッピング1
 OpenGL+GLSL
 */
+#ifdef __linux__
+#include <time.h> // for clock_gettime()
+#else
 #include <windows.h>
+#define M_PI 3.14159265358979323846
+#endif
 #include <stdio.h>
 #include <GL/glew.h>
 #include <GL/glut.h>
 #include "../../imageLoadSave.h"
 #include "../../myGlsl.h"
 #include <math.h>
-#define M_PI 3.14159265358979323846
 
 //関数のプロトタイプ宣言
 void init();
@@ -233,6 +237,17 @@ void setTexture()
   glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);//GL_NEAREST);
   glBindTexture(GL_TEXTURE_2D, 0);//バインドを解除
 }
+
+#ifdef __linux__
+static double timeGetTime()
+{
+	struct timespec tp;
+	clock_gettime(CLOCK_REALTIME, &tp);
+	double msec = (double)tp.tv_sec * 1000.0 + (double)tp.tv_nsec / 1000.0;
+	printf("%s: msec %f\n", __FUNCTION__, msec);
+	return msec;
+}
+#endif
 
 void display(void)
 {
