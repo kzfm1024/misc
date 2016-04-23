@@ -8,12 +8,15 @@ Microsoft Visual Studio .NET2005 Standard Edition
 カラーマッピング
 OpenGL only
 */
-//#include <windows.h>
+#ifdef __linux__
+#include <time.h> // for clock_gettime()
+#else
+#include <windows.h>
+#endif
 #include <GL/glut.h>
 #include "../../myPrimitive2.h"
 #include "../../myTexture2.h"
 #include "../../imageLoadSave.h"
-#include <time.h> // for clock_gettime()
 
 //関数のプロトタイプ宣言
 void init();
@@ -259,6 +262,7 @@ void setTexture(int n)
   glBindTexture(GL_TEXTURE_2D, 0);
 }
 
+#ifdef __linux__
 static double timeGetTime()
 {
 	struct timespec tp;
@@ -267,6 +271,7 @@ static double timeGetTime()
 	printf("%s: msec %f\n", __FUNCTION__, msec);
 	return msec;
 }
+#endif
 
 void display(void)
 {
