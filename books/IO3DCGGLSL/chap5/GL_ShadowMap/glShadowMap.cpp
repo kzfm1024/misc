@@ -8,12 +8,15 @@ Microsoft Visual Studio .NET2005 Standard Edition
 シャドウマッピング
 OpenGL only（固定シェーダ）
 */
-//#include <windows.h>
+#ifdef __linux__
+#include <time.h> // for clock_gettime()
+#else
+#include <windows.h>
+#endif
 #include <stdio.h>
 #include <GL/glew.h>
 #include <GL/glut.h>
 #include "../../myPrimitive2.h"
-#include <time.h> // for clock_gettime()
 
 //関数のプロトタイプ宣言
 void init();
@@ -212,6 +215,7 @@ void setShadowMap()
   glEnable(GL_TEXTURE_GEN_Q);
 }
 
+#ifdef __linux__
 static double timeGetTime()
 {
 	struct timespec tp;
@@ -220,6 +224,7 @@ static double timeGetTime()
 	printf("%s: msec %f\n", __FUNCTION__, msec);
 	return msec;
 }
+#endif
 
 void display(void)
 {
