@@ -30,5 +30,5 @@ void ParallelAverage( float* output, const float* input, size_t n )
 
 main()
 {
-    ParallelAverage(input, output, NUM);
+    ParallelAverage(s_input, s_output, NUM);
 }
