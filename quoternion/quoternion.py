@@ -32,61 +32,37 @@ def rotate_z(rad):
                     [0,  0, 1]])
     return Rz
 
-def qmul(p, q):
-    r = [ 0.0, 0.0, 0.0, 0.0 ]
-    r[0] = p[0] * q[0] - p[1] * q[1] - p[2] * q[2] - p[3] * q[3]
-    r[1] = p[0] * q[1] + p[1] * q[0] + p[2] * q[3] - p[3] * q[2]
-    r[2] = p[0] * q[2] - p[1] * q[3] + p[2] * q[0] + p[3] * q[1]
-    r[3] = p[0] * q[3] + p[1] * q[2] - p[2] * q[1] + p[3] * q[0]
-    return r
-
-def qrot(q):
-    r = [ 1.0, 0.0, 0.0, 0.0,
-          0.0, 1.0, 0.0, 0.0,
-          0.0, 0.0, 1.0, 0.0,
-          0.0, 0.0, 0.0, 1.0 ]
-
-    x2 = q[1] * q[1] * 2.0
-    y2 = q[2] * q[2] * 2.0
-    z2 = q[3] * q[3] * 2.0
-    xy = q[1] * q[2] * 2.0
-    yz = q[2] * q[3] * 2.0
-    zx = q[3] * q[1] * 2.0
-    xw = q[1] * q[0] * 2.0
-    yw = q[2] * q[0] * 2.0
-    zw = q[3] * q[0] * 2.0
-  
-    r[ 0] = 1.0 - y2 - z2
-    r[ 1] = xy + zw
-    r[ 2] = zx - yw
-    r[ 3] = 0.0
-    r[ 4] = xy - zw
-    r[ 5] = 1.0 - z2 - x2
-    r[ 6] = yz + xw
-    r[ 7] = 0.0
-    r[ 8] = zx + yw
-    r[ 9] = yz - xw
-    r[10] = 1.0 - x2 - y2
-    r[11] = 0.0
-    r[12] = 0.0
-    r[13] = 0.0
-    r[14] = 0.0
-    r[15] = 1.0
-    return r
-
+def rotate_quoternion(q1, q2, q3, q4):
+    q1_2 = q1 * q1
+    q2_2 = q2 * q2
+    q3_2 = q3 * q3
+    q4_2 = q4 * q4
+    q1q2 = q1 * q2
+    q1q3 = q1 * q3
+    q1q4 = q1 * q4
+    q2q3 = q1 * q2
+    q2q4 = q1 * q4
+    q3q4 = q3 * q4
+    Rq = np.matrix([[q1_2 - q2_2 - q3_2 + q4_2, 2.0 * (q1q2 - q3q4), 2.0 * (q1q3 - q2q4)],
+                    [2.0 * (q1q2 + q3q4), - q1_2 + q2_2 + q3_2 + q4_2, 2.0 * (q2q3 - q1q4)],
+                    [2.0 * (q1q3 - q2q4), 2.0 * (q2q3 + q1q4), - q1_2 - q2_2 + q3_2 + q4_2]])
+    return Rq
 
 def main():
     a = np.array((1,1,0))
     R = rotate_x(math.radians(90))
     b = np.dot(R, a)
-    print 'a=' + str(a)
-    print 'R=' + str(R)
-    print 'b=' + str(b)
+    print('a=' + str(a))
+    print('R=' + str(R))
+    print('b=' + str(b))
 
     R = rotate_xyz(math.radians(90), 0, 0)
     b = np.dot(R, a)
-    print 'R=' + str(R)
-    print 'b=' + str(b)
+    print('R=' + str(R))
+    print('b=' + str(b))
 
+    R = rotate_quoternion(0, 0, 0, 1)
+    print('R=' + str(R))
+    
 if __name__ == '__main__':
     main()
