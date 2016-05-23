@@ -49,7 +49,7 @@ def rotate_quoternion(q1, q2, q3, q4):
     return Rq
 
 def main():
-    a = np.array((1,1,0))
+    a = np.array((1, 1, 0))
     R = rotate_x(math.radians(90))
     b = np.dot(R, a)
     print('a=' + str(a))
@@ -61,8 +61,10 @@ def main():
     print('R=' + str(R))
     print('b=' + str(b))
 
-    R = rotate_quoternion(0, 0, 0, 1)
-    print('R=' + str(R))
+    Rq = rotate_quoternion(0.086256,0.071167,-0.030797,0.993251)
+    v0 = np.array((0, 0, -1))
+    v1 = np.dot(Rq, v0)
+    print('v1=' + str(v1))
     
 if __name__ == '__main__':
     main()
