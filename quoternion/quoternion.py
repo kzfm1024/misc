@@ -20,10 +20,6 @@ def rotate_y(rad):
                     [S, 0,  C]])
     return Ry
 
-def rotate_xyz(rx, ry, rz):
-    R = rotate_x(rx) * rotate_y(ry) * rotate_z(rz)
-    return R
-
 def rotate_z(rad):
     C = math.cos(rad)
     S = math.sin(rad)
@@ -31,6 +27,26 @@ def rotate_z(rad):
                     [S,  C, 0],
                     [0,  0, 1]])
     return Rz
+
+def rotate_xyz(rx, ry, rz):
+    R = rotate_x(rx) * rotate_y(ry) * rotate_z(rz)
+    return R
+
+def rotate_quoternion(q):
+    x2 = q[1] * q[1] * 2.0
+    y2 = q[2] * q[2] * 2.0
+    z2 = q[3] * q[3] * 2.0
+    xy = q[1] * q[2] * 2.0
+    yz = q[2] * q[3] * 2.0
+    zx = q[3] * q[1] * 2.0
+    xw = q[1] * q[0] * 2.0
+    yw = q[2] * q[0] * 2.0
+    zw = q[3] * q[0] * 2.0
+
+    Rq = np.matrix([[ 1.0 - y2 - z2,       xy + zw,       zx - yw ],
+                    [       xy - zw, 1.0 - z2 - x2,       yz + xw ],
+                    [       zx + yw,       yz - xw, 1.0 - x2 - y2 ]])
+    return Rq
 
 def qmul(p, q):
     r = [ 0.0, 0.0, 0.0, 0.0 ]
@@ -79,14 +95,18 @@ def main():
     a = np.array((1,1,0))
     R = rotate_x(math.radians(90))
     b = np.dot(R, a)
-    print 'a=' + str(a)
-    print 'R=' + str(R)
-    print 'b=' + str(b)
+    print('a=' + str(a))
+    print('R=' + str(R))
+    print('b=' + str(b))
 
     R = rotate_xyz(math.radians(90), 0, 0)
     b = np.dot(R, a)
-    print 'R=' + str(R)
-    print 'b=' + str(b)
+    print('R=' + str(R))
+    print('b=' + str(b))
+
+    q = np.array((0, 0, 0, 1))
+    R = rotate_quoternion(q)
+    print('R=' + str(R))
 
 if __name__ == '__main__':
     main()
