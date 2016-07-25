@@ -1,0 +1,47 @@
+<robot name="ers210">
+
+  <link name="body" />
+
+<!--
+  <link name="head_tilt" />
+  <link name="head_pan" />
+  <link name="head_roll" />
+-->
+  
+  <link name="front_left_leg1" />
+  <link name="front_left_leg2" />
+  <link name="front_left_leg3" />
+
+  <!--
+  <link name="front_right_leg1" />
+  <link name="front_right_leg2" />
+  <link name="front_right_leg3" />
+
+  <link name="back_left_leg1" />
+  <link name="back_left_leg2" />
+  <link name="back_left_leg3" />
+
+  <link name="back_right_leg1" />
+  <link name="back_right_leg2" />
+  <link name="back_right_leg3" />
+
+  <link name="tail_pan" />
+  <link name="tail_tilt" />
+  -->
+
+  <joint name="front_left_leg_j1" type="continuous">
+    <parent link="body" />
+    <child link="front_left_leg1" />
+  </joint>
+
+  <joint name="front_left_leg_j2" type="continuous">
+    <parent link="front_left_leg1" />
+    <child link="front_left_leg2" />
+  </joint>
+
+  <joint name="front_left_leg_j3" type="continuous">
+    <parent link="front_left_leg2" />
+    <child link="front_left_leg3" />
+  </joint>
+
+</robot>
