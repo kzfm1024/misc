@@ -1,0 +1,11 @@
+<launch>
+  <group ns="C++">
+    <node name="talker1" pkg="beginner_tutorials" type="talker" />
+    <node name="listener1" pkg="beginner_tutorials" type="listener" />
+  </group>
+
+  <group ns="Python">
+    <node name="talker2" pkg="beginner_tutorials" type="talker.py" />
+    <node name="listener2" pkg="beginner_tutorials" type="listener.py" />
+  </group>
+</launch>
