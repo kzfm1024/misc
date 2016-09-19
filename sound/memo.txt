@@ -1,1 +1,4 @@
 https://wiki.ubuntulinux.jp/UbuntuStudioTips/Setup/UbuntuSoundSystem
+
+
+$ pactl load-module module-dbus-protocol
