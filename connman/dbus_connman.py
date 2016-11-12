@@ -17,6 +17,14 @@ def print_technologies(technologies):
                 print_dictionary(x)
             else:
                 print(x)
+
+def print_services(services):
+    for tech in services:
+        for x in tech:
+            if isinstance(x, dbus.Dictionary):
+                print_dictionary(x)
+            else:
+                print(x)
             
 def main():
     bus = dbus.SystemBus()
@@ -26,11 +34,11 @@ def main():
     print('[net.connman.Manager Properties]')
     print_dictionary(manager.GetProperties())
 
-    print('[Services]')
-    print_technologies(manager.GetServices())
-
     print('[Technologies]')
     print_technologies(manager.GetTechnologies())
+
+    print('[Services]')
+    print_services(manager.GetServices())
 
 if __name__ == '__main__':
     main()
