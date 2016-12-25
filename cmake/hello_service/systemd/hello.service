@@ -1,0 +1,10 @@
+[Unit]
+Description=hello service
+
+[Service]
+ExecStart=/usr/bdk/sbin/hello
+Restart=always
+Type=simple
+
+[Install]
+WantedBy=multi-user.target
