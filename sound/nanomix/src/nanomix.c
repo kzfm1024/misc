@@ -15,9 +15,8 @@ static void error(const char *fmt,...)
 static snd_hctl_t *nanomix_open(unsigned int card)
 {
     char hw[64];
-
     snprintf(hw, sizeof(hw), "hw:%u", card);
-    
+
     snd_hctl_t *handle;
     int err = snd_hctl_open(&handle, hw, 0);
 	if (err < 0)
