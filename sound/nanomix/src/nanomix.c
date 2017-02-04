@@ -1,8 +1,4 @@
 #include <stdio.h>
-<<<<<<< HEAD
-#include <stdlib.h>
-=======
->>>>>>> d74c8c1d58f014f7d9f05d564958d27f5c1bb61c
 #include <alsa/asoundlib.h>
 
 static void error(const char *fmt,...)
@@ -80,21 +76,6 @@ static int nanomix_print_value(snd_hctl_t* handle, snd_hctl_elem_t *elem)
             {
 			case SND_CTL_ELEM_TYPE_BOOLEAN:
 				printf("%s ", snd_ctl_elem_value_get_boolean(value, idx) ? "on" : "off");
-<<<<<<< HEAD
-                break;
-			case SND_CTL_ELEM_TYPE_INTEGER:
-				printf("%li ", snd_ctl_elem_value_get_integer(value, idx));
-                break;
-			case SND_CTL_ELEM_TYPE_INTEGER64:
-				printf("%Li ", snd_ctl_elem_value_get_integer64(value, idx));
-                break;
-			case SND_CTL_ELEM_TYPE_ENUMERATED:
-				printf("%u ", snd_ctl_elem_value_get_enumerated(value, idx));
-                break;
-			case SND_CTL_ELEM_TYPE_BYTES:
-				printf("0x%02x ", snd_ctl_elem_value_get_byte(value, idx));
-                break;
-=======
 				break;
 			case SND_CTL_ELEM_TYPE_INTEGER:
 				printf("%li ", snd_ctl_elem_value_get_integer(value, idx));
@@ -108,23 +89,15 @@ static int nanomix_print_value(snd_hctl_t* handle, snd_hctl_elem_t *elem)
 			case SND_CTL_ELEM_TYPE_BYTES:
 				printf("0x%02x ", snd_ctl_elem_value_get_byte(value, idx));
 				break;
->>>>>>> d74c8c1d58f014f7d9f05d564958d27f5c1bb61c
 			case SND_CTL_ELEM_TYPE_IEC958:
 				snd_ctl_elem_value_get_iec958(value, &iec958);
 				printf("[AES0=0x%02x AES1=0x%02x AES2=0x%02x AES3=0x%02x] ",
 				       iec958.status[0], iec958.status[1],
 				       iec958.status[2], iec958.status[3]);
-<<<<<<< HEAD
                 break;
 			default:
 				printf("? ");
                 break;
-=======
-				break;
-			default:
-				printf("? ");
-				break;
->>>>>>> d74c8c1d58f014f7d9f05d564958d27f5c1bb61c
 			}
 		}
 		printf("\n");
@@ -178,7 +151,6 @@ static int nanomix_get_control(snd_hctl_t* handle, const char *control)
 static int nanomix_set_value(snd_hctl_t* handle, snd_hctl_elem_t *elem,
                              char **values, unsigned int num_values)
 {
-<<<<<<< HEAD
     int err;
     snd_ctl_elem_info_t *info;
     snd_ctl_elem_value_t *value;
@@ -222,11 +194,6 @@ static int nanomix_set_value(snd_hctl_t* handle, snd_hctl_elem_t *elem,
     snd_hctl_elem_write (elem, value);
     snd_ctl_elem_value_free(value);
 
-=======
-    //
-    //
-    //
->>>>>>> d74c8c1d58f014f7d9f05d564958d27f5c1bb61c
     return 0;
 }
 
@@ -261,12 +228,7 @@ int main(int argc, char **argv)
     snd_hctl_t *handle = nanomix_open(card);
     if (!handle)
     {
-<<<<<<< HEAD
         return 1; // error
-=======
-        ret = 1; /* error */
-        goto end;
->>>>>>> d74c8c1d58f014f7d9f05d564958d27f5c1bb61c
     }
 
     if (argc == 1)
@@ -281,14 +243,6 @@ int main(int argc, char **argv)
     {
         nanomix_set_control(handle, argv[1], &argv[2], argc - 2);
     }
-<<<<<<< HEAD
-=======
-    else
-    {
-        fprintf(stderr, "Usage: %s [control id] [value to set]\n", argv[0]);
-        ret = 1; // error
-    }
->>>>>>> d74c8c1d58f014f7d9f05d564958d27f5c1bb61c
     
     nanomix_close(handle);
 
