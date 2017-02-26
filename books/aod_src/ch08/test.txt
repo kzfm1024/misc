@@ -1,0 +1,14 @@
+In this chapter we set out some basic principles of debugging, both
+general and also with regard to the GDB and DDD debuggers. At least one
+of our ``rules'' will be formal in nature, The Fundamental Principle of
+Debugging.
+
+
+Beginners should of course read this chapter carefully, since the
+material here will be used throughout the remainder of the book.
+
+Professionals may be tempted to skip the chapter. We suggest, though,
+that they at least skim through it. Many professionals will find at
+least some new material, and in any case it is important that all
+readers begin with a common background.
+

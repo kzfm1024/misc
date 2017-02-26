@@ -1,0 +1,134 @@
+﻿<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<style type="text/css">
+<!--
+blockquote { font-family: monospace }
+-->
+</style>
+</head>
+<body>
+
+<h1>『実践　デバッグ技法』サンプルプログラム集</h1>
+
+<p>本ディレクトリには、『実践　デバッグ技法』の本文に記載されている
+ソースコードの一部が含まれています。
+<p>本ドキュメントは、ソースコードの使い方について説明します。
+
+<h2>■構成</h2>
+</P>ch01～ch08/には、それぞれ、1章～8章に記載されているソースコードが
+収録されています。ただし、本文上で故意にバグが混入されたソースコードは、
+buggy/というサブディレクトリに収録されています。ch01～ch08直下の
+ソースコードは、バグが修正されたものになっています。
+
+<h2>■準備</h2>
+<p>事前に、下記のソフトウェアをインストールしておく必要があります。
+
+<h3>●MPICH</h3>
+<p>5.3.1節に MPICH を用いた例があります。
+<p>MPICHは、
+<blockquote>
+    http://www.mcs.anl.gov/research/projects/mpi/mpich1/download.html
+</blockquote>
+<p>
+から入手できます。
+<blockquote>
+    mpich.tar.gz 
+</blockquote>
+<p>
+をダウンロードしたら、下記のようにインストールします。
+<blockquote>
+    $ tar xvzf mpich.tar.gz<br>
+    $ cd mpich-1.2.7p1<br>
+    $ ./configure -prefix=/usr/local/mpi -rsh=ssh<br>
+    $ make<br>
+    $ sudo make install
+</blockquote>
+
+<p>※ インストールパス が/usr/local/mpi でない場合には、
+ch05/Makefile の冒頭
+<blockquote>
+      MPIBIN = /usr/local/mpi/bin
+</blockquote>
+<p>を実際のパスに合わせて修正して下さい。
+
+<h3>●splint</h3>
+<p>7.5節で、splint を用います。各種Linux用にパッケージが用意されているので、
+例えば次のようにインストールできます。
+<blockquote>
+    $ yum install splint
+</blockquote>
+
+<h3>●ElectricFence</h3>
+<p>7.6.2節で、ElectricFence を用います。これも、次のようにインストールできます。
+<blockquote>
+    $ yum install ElectricFence
+</blockquote>
+
+<h3>●mtrace</h3>
+<p>7.6.3.3節で、mtrace を用います。スクリプトmtraceがない場合は、
+<blockquote>
+    $ yum install glibc-utils
+</blockquote>
+<p>
+のように追加ユーティリティをインストールします。
+
+<h3>●gcj</h3>
+<p>8.1.1節では、gcj を用いてJavaのソースをコンパイルします。
+<p>コンパイラ gcc-javaと、ライブラリと開発キット libgcj-develが必要です。
+<blockquote>
+    $yum install gcc-java libgcj-devel
+</blockquote>
+
+<h3>●SWIG</h3>
+<p>8.4節では、SWIGを用いてPythonの機能を拡張します。
+<p>SWIGのパッケージの他に、Pythonの開発パッケージも必要です。
+<blockquote>
+    $yum install swig<br>
+    $yum install python-devel
+</blockquote>
+
+<h2>■コンパイル</h2>
+<p>このディレクトリで、
+<blockquote>
+    $ make
+</blockquote>
+<p>を実行すれば、コンパイルをします。
+
+<h2>■実行</h2>
+<p>このディレクトリで、
+<blockquote>
+    $ make test
+</blockquote>
+<p>を実行すると、プログラムを順番に実行していきます。
+
+<p>途中２カ所で、ユーザの入力を求めて止まりますので、
+下記のように入力して下さい。
+
+<h3>●MPICH の実行</h3>
+<p>ssh で MPICH で設定したノードにログインするためのパスワードを
+2回尋ねてきます。
+<blockquote>
+   /usr/local/mpi/bin/mpirun -np 3 primepipe 100 0 <br>
+   user@hostname's password: <br>
+   user@hostname's password: <br>
+</blockquote>
+<p>MPICHをインストールした直後であれば、localhost にログインする
+パスワードでOKです。
+<p>なお、sshで初めて接続する場合には、ホスト公開鍵を受け入れる
+かどうかを尋ねてきますので、yesと答えてください。
+
+<h3>●psax</h3>
+<p>6.2.1節の curses ライブラリを用いたプログラムです。
+[u],[d],[r],[k] 以外のキーを入力すると終了します。
+
+<h2>■注意</h2>
+<ul>
+<li>ソースコードの文字コードはUTF-8、改行コードはLFのみです。
+<li>ソースコードは、本書の記載と異なる場合があります。
+<li>上記で説明した以外のパッケージが必要になる場合がありますので、
+  適宜 yum や apt-get でインストールして下さい。
+</ul>
+</body>
+</html>
+

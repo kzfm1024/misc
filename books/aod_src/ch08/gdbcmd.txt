@@ -1,0 +1,10 @@
+printf "(gdb) b done\n"
+b done
+printf "(gdb) r\n"
+r
+printf "(gdb) p $eax\n"
+p $eax
+printf "(gdb) quit\n"
+q
+
+

@@ -1,0 +1,3 @@
+= Start
+@ ./mtrace1:[0x8048496] + 0x8f993c0 0x4
+@ ./mtrace1:[0x80484ca] - 0x23e5e0
