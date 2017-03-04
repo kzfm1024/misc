@@ -1,5 +1,7 @@
 // bintree.cc: 二分木に挿入やソートした表示をするルーチン群
-#include <iostream.h>
+//#include <iostream.h>
+#include <iostream>
+#include <stdlib.h>
 class Node {
 public:
     static Node *root; // 木全体の根
@@ -52,7 +54,7 @@ void Node::printtree(Node *np)
 {
     if (np == 0) return;
     Node::printtree(np->left);
-    cout << np->val << endl;
+    std::cout << np->val << std::endl;
     Node::printtree(np->right);
 }
 
