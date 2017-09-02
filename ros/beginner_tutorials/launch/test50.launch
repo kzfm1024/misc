@@ -1,0 +1,63 @@
+<launch>
+  <node name="talker1" pkg="beginner_tutorials" type="talker" />
+
+
+
+
+  <node name="listener00" pkg="beginner_tutorials" type="listener" />
+  <node name="listener01" pkg="beginner_tutorials" type="listener" />
+  <node name="listener02" pkg="beginner_tutorials" type="listener" />
+  <node name="listener03" pkg="beginner_tutorials" type="listener" />
+  <node name="listener04" pkg="beginner_tutorials" type="listener" />
+  <node name="listener05" pkg="beginner_tutorials" type="listener" />
+  <node name="listener06" pkg="beginner_tutorials" type="listener" />
+  <node name="listener07" pkg="beginner_tutorials" type="listener" />
+  <node name="listener08" pkg="beginner_tutorials" type="listener" />
+  <node name="listener09" pkg="beginner_tutorials" type="listener" />
+
+  <node name="listener10" pkg="beginner_tutorials" type="listener" />
+  <node name="listener11" pkg="beginner_tutorials" type="listener" />
+  <node name="listener12" pkg="beginner_tutorials" type="listener" />
+  <node name="listener13" pkg="beginner_tutorials" type="listener" />
+  <node name="listener14" pkg="beginner_tutorials" type="listener" />
+  <node name="listener15" pkg="beginner_tutorials" type="listener" />
+  <node name="listener16" pkg="beginner_tutorials" type="listener" />
+  <node name="listener17" pkg="beginner_tutorials" type="listener" />
+  <node name="listener18" pkg="beginner_tutorials" type="listener" />
+  <node name="listener19" pkg="beginner_tutorials" type="listener" />
+
+  <node name="listener20" pkg="beginner_tutorials" type="listener" />
+  <node name="listener21" pkg="beginner_tutorials" type="listener" />
+  <node name="listener22" pkg="beginner_tutorials" type="listener" />
+  <node name="listener23" pkg="beginner_tutorials" type="listener" />
+  <node name="listener24" pkg="beginner_tutorials" type="listener" />
+  <node name="listener25" pkg="beginner_tutorials" type="listener" />
+  <node name="listener26" pkg="beginner_tutorials" type="listener" />
+  <node name="listener27" pkg="beginner_tutorials" type="listener" />
+  <node name="listener28" pkg="beginner_tutorials" type="listener" />
+  <node name="listener29" pkg="beginner_tutorials" type="listener" />
+
+  <node name="listener30" pkg="beginner_tutorials" type="listener" />
+  <node name="listener31" pkg="beginner_tutorials" type="listener" />
+  <node name="listener32" pkg="beginner_tutorials" type="listener" />
+  <node name="listener33" pkg="beginner_tutorials" type="listener" />
+  <node name="listener34" pkg="beginner_tutorials" type="listener" />
+  <node name="listener35" pkg="beginner_tutorials" type="listener" />
+  <node name="listener36" pkg="beginner_tutorials" type="listener" />
+  <node name="listener37" pkg="beginner_tutorials" type="listener" />
+  <node name="listener38" pkg="beginner_tutorials" type="listener" />
+  <node name="listener39" pkg="beginner_tutorials" type="listener" />
+
+  <node name="listener40" pkg="beginner_tutorials" type="listener" />
+  <node name="listener41" pkg="beginner_tutorials" type="listener" />
+  <node name="listener42" pkg="beginner_tutorials" type="listener" />
+  <node name="listener43" pkg="beginner_tutorials" type="listener" />
+  <node name="listener44" pkg="beginner_tutorials" type="listener" />
+  <node name="listener45" pkg="beginner_tutorials" type="listener" />
+  <node name="listener46" pkg="beginner_tutorials" type="listener" />
+  <node name="listener47" pkg="beginner_tutorials" type="listener" />
+  <node name="listener48" pkg="beginner_tutorials" type="listener" />
+  <node name="listener49" pkg="beginner_tutorials" type="listener" />
+
+</launch>
+
