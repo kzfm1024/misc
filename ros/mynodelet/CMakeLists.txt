@@ -122,6 +122,8 @@ include_directories(
 
 #add_library(mynodelet src/MyNodeletClass.cpp)
 add_library(MyNodeletClass src/MyNodeletClass.cpp)
+add_library(TalkerNodeletClass src/TalkerNodeletClass.cpp)
+add_library(ListenerNodeletClass src/ListenerNodeletClass.cpp)
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
