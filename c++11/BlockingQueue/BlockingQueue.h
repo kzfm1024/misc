@@ -8,7 +8,7 @@ class BlockingQueue
 public:
     BlockingQueue(size_t size = 1)
         : m_maxsize(size), m_queue()
-        , m_mutex(), m_back_cond(), m_front_cond() {}
+        , m_mutex(), m_front_cond(), m_back_cond() {}
     ~BlockingQueue() {}
 
     bool empty()
@@ -55,6 +55,6 @@ private:
     size_t m_maxsize;
     std::queue<T> m_queue;    
     std::mutex m_mutex;
-    std::condition_variable m_back_cond;
     std::condition_variable m_front_cond;
+    std::condition_variable m_back_cond;
 };
