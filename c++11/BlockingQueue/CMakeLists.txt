@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8)
-project(c++11)
+project(blocking_queue)
 
 set(CMAKE_CXX_FLAGS "-g -O2 -std=c++11")
 

@@ -1,12 +1,10 @@
 #include <iostream>
 #include <thread>
-#include <atomic>
 #include <cassert>
 #include "BlockingQueue.h"
 #include <sched.h>
 
-std::atomic<int> s_flag;
-BlockingQueue<int> s_que(1);
+BlockingQueue<int> s_queue(1);
 
 int set_sched_priority(int policy, int prio)
 {
@@ -31,14 +29,13 @@ void producer()
     
     for (int i = 0; i < 10; i++)
     {
-        s_que.put(i);
+        s_queue.put(i);
         std::this_thread::sleep_for(std::chrono::seconds(1));
     }
 
-    s_flag = 0;
-    s_que.put(-1);
+    s_queue.put(-1);
 
-    std::this_thread::sleep_for(std::chrono::seconds(5));
+    std::this_thread::sleep_for(std::chrono::seconds(3));
 }
 
 int main()
@@ -46,11 +43,12 @@ int main()
     set_sched_priority(SCHED_FIFO, 55);
     
     std::thread th(producer);
-    s_flag = 1;
 
-    while (s_flag)
+    while (true)
     {
-        std::cout << s_que.take() << std::endl;
+        int i = s_queue.take();
+        std::cout << i << std::endl;
+        if (i == -1) break;
     }
 
     std::cout << "waiting for producer thread..." << std::endl;
