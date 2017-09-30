@@ -1,0 +1,6 @@
+$ mkdir build
+$ cd build
+$ cmake ..
+$ make
+$ sudo ./timedwait
+$ sudo ./wait_until
