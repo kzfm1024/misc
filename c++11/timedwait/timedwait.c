@@ -11,51 +11,47 @@ static pthread_cond_t s_cond = PTHREAD_COND_INITIALIZER;
 static pthread_cond_t s_cond_monotonic = PTHREAD_COND_INITIALIZER;
 
 void timespec_diff(struct timespec *start,
-                   struct timespec *stop,
+                   struct timespec *end,
                    struct timespec *result)
 {
-    if ((stop->tv_nsec - start->tv_nsec) < 0)
+    if ((end->tv_nsec - start->tv_nsec) < 0)
     {
-        result->tv_sec = stop->tv_sec - start->tv_sec - 1;
-        result->tv_nsec = stop->tv_nsec - start->tv_nsec + 1000000000;
+        result->tv_sec = end->tv_sec - start->tv_sec - 1;
+        result->tv_nsec = end->tv_nsec - start->tv_nsec + 1000000000;
     }
     else
     {
-        result->tv_sec = stop->tv_sec - start->tv_sec;
-        result->tv_nsec = stop->tv_nsec - start->tv_nsec;
+        result->tv_sec = end->tv_sec - start->tv_sec;
+        result->tv_nsec = end->tv_nsec - start->tv_nsec;
     }
 }
 
-void print_timedwait_result(int retcode,
+void print_timedwait_result(int id, int result,
                             struct timespec* start,
-                            struct timespec* stop)
+                            struct timespec* end)
 {
     struct timespec diff;
-    timespec_diff(start, stop, &diff);
+    timespec_diff(start, end, &diff);
 
-    if (retcode == ETIMEDOUT)
+    if (result == ETIMEDOUT)
     {
-        printf("ETIMEDOUT : %ld.%06ld (%ld.%06ld => %ld.%06ld)\n",
+        printf("timeout: %ld.%06ld (%ld.%06ld => %ld.%06ld)\n",
                diff.tv_sec, diff.tv_nsec,
-               start->tv_sec, start->tv_nsec, stop->tv_sec, stop->tv_nsec);
+               start->tv_sec, start->tv_nsec, end->tv_sec, end->tv_nsec);
                
-    }
-    else if (retcode == EINTR)
-    {
-        printf("EINTR     : %ld.%06ld (%ld.%06ld => %ld.%06ld)\n",
-               diff.tv_sec, diff.tv_nsec,
-               start->tv_sec, start->tv_nsec, stop->tv_sec, stop->tv_nsec);
     }
     else
     {
-        printf("SUCCESS   : %ld.%06ld (%ld.%06ld => %ld.%06ld)\n",
+        printf("success: %ld.%06ld (%ld.%06ld => %ld.%06ld)\n",
                diff.tv_sec, diff.tv_nsec,
-               start->tv_sec, start->tv_nsec, stop->tv_sec, stop->tv_nsec);
+               start->tv_sec, start->tv_nsec, end->tv_sec, end->tv_nsec);
     }
 }
 
 void* timedwait(void* arg)
 {
+    int id = *((int*)arg);
+    
     pthread_mutex_lock(&s_mutex);
     {
         struct timespec start;
@@ -68,13 +64,15 @@ void* timedwait(void* arg)
 
         struct timespec now;
         clock_gettime(CLOCK_REALTIME, &now);
-        print_timedwait_result(ret, &start, &now);
+        print_timedwait_result(id, ret, &start, &now);
     }
     pthread_mutex_unlock(&s_mutex);
 }
 
 void* timedwait_monotonic(void* arg)
 {
+    int id = *((int*)arg);
+
     pthread_mutex_lock(&s_mutex);
     {
         struct timespec start;
@@ -87,15 +85,15 @@ void* timedwait_monotonic(void* arg)
 
         struct timespec now;
         clock_gettime(CLOCK_MONOTONIC, &now);
-        print_timedwait_result(ret, &start, &now);
+        print_timedwait_result(id, ret, &start, &now);
     }
     pthread_mutex_unlock(&s_mutex);
 }
 
 int main()
 {
-    pthread_t th;
-    pthread_t th_monotonic;
+    pthread_t t1, t2, t3, t4;
+    int id[4] = { 1, 2, 3, 4 };
 
     pthread_condattr_t attr;
     pthread_condattr_init(&attr);
@@ -105,38 +103,37 @@ int main()
     /*
      * do pthread_cond_signal() after 1 seconds
      */
-    pthread_create(&th, NULL, timedwait, NULL);
+    pthread_create(&t1, NULL, timedwait, (void*)&id[0]);
+    sleep(1);
     {
-        sleep(1);
         pthread_mutex_lock(&s_mutex);    
         pthread_cond_signal(&s_cond);
         pthread_mutex_unlock(&s_mutex);
     }
-    pthread_join(th, NULL);
+    pthread_join(t1, NULL);
 
     /*
      * do nothing - timedwait thread will be timed out
      */
-    pthread_create(&th, NULL, timedwait, NULL);
+    pthread_create(&t2, NULL, timedwait, (void*)&id[1]);
     {
         ;
     }
-    pthread_join(th, NULL);
+    pthread_join(t2, NULL);
 
     /*
-     *  set the clock 1 minute  - timedwait thread will be timed out
+     *  set the clock forward 1 minute  - timedwait thread will be timed out
      */
-    pthread_create(&th, NULL, timedwait, NULL);
-    pthread_create(&th_monotonic, NULL, timedwait_monotonic, NULL);
+    pthread_create(&t3, NULL, timedwait, (void*)&id[3]);
+    pthread_create(&t4, NULL, timedwait_monotonic, (void*)&id[4]);
+    sleep(1);
     {
-        sleep(1);
-
         struct timespec now;
         clock_gettime(CLOCK_REALTIME, &now);
         now.tv_sec += 60;
         int ret = clock_settime(CLOCK_REALTIME, &now);
         assert(ret == 0); // root privilege is necessary for clock_settime()
     }
-    pthread_join(th, NULL);
-    pthread_join(th_monotonic, NULL);
+    pthread_join(t3, NULL);
+    pthread_join(t4, NULL);
 }
