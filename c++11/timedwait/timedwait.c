@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <time.h>
+#include <unistd.h>
 #include <pthread.h>
 #include <errno.h>
 #include <assert.h>
@@ -35,15 +36,15 @@ void print_timedwait_result(int id, int result,
 
     if (result == ETIMEDOUT)
     {
-        printf("timeout: %ld.%06ld (%ld.%06ld => %ld.%06ld)\n",
-               diff.tv_sec, diff.tv_nsec,
+        printf("t%d timeout: %ld.%06ld (%ld.%06ld => %ld.%06ld)\n",
+               id, diff.tv_sec, diff.tv_nsec,
                start->tv_sec, start->tv_nsec, end->tv_sec, end->tv_nsec);
                
     }
     else
     {
-        printf("success: %ld.%06ld (%ld.%06ld => %ld.%06ld)\n",
-               diff.tv_sec, diff.tv_nsec,
+        printf("t%d success: %ld.%06ld (%ld.%06ld => %ld.%06ld)\n",
+               id, diff.tv_sec, diff.tv_nsec,
                start->tv_sec, start->tv_nsec, end->tv_sec, end->tv_nsec);
     }
 }
@@ -93,7 +94,7 @@ void* timedwait_monotonic(void* arg)
 int main()
 {
     pthread_t t1, t2, t3, t4;
-    int id[4] = { 1, 2, 3, 4 };
+    int id1 = 1, id2 = 2, id3 = 3, id4 = 4;
 
     pthread_condattr_t attr;
     pthread_condattr_init(&attr);
@@ -103,7 +104,7 @@ int main()
     /*
      * do pthread_cond_signal() after 1 seconds
      */
-    pthread_create(&t1, NULL, timedwait, (void*)&id[0]);
+    pthread_create(&t1, NULL, timedwait, (void*)&id1);
     sleep(1);
     {
         pthread_mutex_lock(&s_mutex);    
@@ -115,7 +116,7 @@ int main()
     /*
      * do nothing - timedwait thread will be timed out
      */
-    pthread_create(&t2, NULL, timedwait, (void*)&id[1]);
+    pthread_create(&t2, NULL, timedwait, (void*)&id2);
     {
         ;
     }
@@ -124,8 +125,8 @@ int main()
     /*
      *  set the clock forward 1 minute  - timedwait thread will be timed out
      */
-    pthread_create(&t3, NULL, timedwait, (void*)&id[3]);
-    pthread_create(&t4, NULL, timedwait_monotonic, (void*)&id[4]);
+    pthread_create(&t3, NULL, timedwait, (void*)&id3);
+    pthread_create(&t4, NULL, timedwait_monotonic, (void*)&id4);
     sleep(1);
     {
         struct timespec now;
