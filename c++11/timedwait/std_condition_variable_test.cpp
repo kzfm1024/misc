@@ -62,39 +62,19 @@ void timedwait_monotonic(int id)
 
 int main()
 {
-    //
-    // do notify_one() after 1 seconds
-    //
     std::thread t1(timedwait, 1);
+    std::thread t2(timedwait_monotonic, 2);
     std::this_thread::sleep_for(std::chrono::seconds(1));
     {
-        std::unique_lock<std::mutex> lock(s_mutex);
-        s_cond.notify_one();
-    }
-    t1.join();
-
-    //
-    // do nothing - timedwait thread will be timed out
-    //
-    std::thread t2(timedwait, 2);
-    {
-        ;
-    }
-    t2.join();
-
-    //
-    // set the clock forward 1 minute
-    //
-    std::thread t3(timedwait, 3);
-    std::thread t4(timedwait_monotonic, 4);
-    std::this_thread::sleep_for(std::chrono::seconds(1));
-    {
+        //
+        // set the clock forward 1 minute
+        //
         struct timespec now;
         clock_gettime(CLOCK_REALTIME, &now);
         now.tv_sec += 60;
         int ret = clock_settime(CLOCK_REALTIME, &now);
         assert(ret == 0); // root privilege is necessary for clock_settime()
     }
-    t3.join();
-    t4.join();
+    t1.join();
+    t2.join();
 }
