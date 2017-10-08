@@ -65,7 +65,7 @@ namespace boost
             pthread_condattr_t attr;
             pthread_condattr_init(&attr);
             pthread_condattr_setclock(&attr, CLOCK_MONOTONIC);
-            pthread_cond_init(&s_cond_monotonic, &attr);
+            pthread_cond_init(&cond, &attr);
             int const res2=pthread_cond_init(&cond,&attr);
             if(res2)
             {
