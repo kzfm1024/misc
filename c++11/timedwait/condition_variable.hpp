@@ -156,7 +156,11 @@ namespace boost
             {
                 boost::throw_exception(thread_resource_error(res, "boost::condition_variable_any::condition_variable_any() failed in pthread_mutex_init"));
             }
-            int const res2=pthread_cond_init(&cond,NULL);
+            pthread_condattr_t attr;
+            pthread_condattr_init(&attr);
+            pthread_condattr_setclock(&attr, CLOCK_MONOTONIC);
+            pthread_cond_init(&s_cond_monotonic, &attr);
+            int const res2=pthread_cond_init(&cond,&attr);
             if(res2)
             {
                 BOOST_VERIFY(!pthread_mutex_destroy(&internal_mutex));
@@ -245,13 +249,13 @@ namespace boost
         cv_status
         wait_until(
                 lock_type& lock,
-                const chrono::time_point<chrono::system_clock, Duration>& t)
+                const chrono::time_point<chrono::steady_clock, Duration>& t)
         {
           using namespace chrono;
-          typedef time_point<system_clock, nanoseconds> nano_sys_tmpt;
+          typedef time_point<steady_clock, nanoseconds> nano_sys_tmpt;
           wait_until(lock,
                         nano_sys_tmpt(ceil<nanoseconds>(t.time_since_epoch())));
-          return system_clock::now() < t ? cv_status::no_timeout :
+          return steady_clock::now() < t ? cv_status::no_timeout :
                                              cv_status::timeout;
         }
 
@@ -262,7 +266,7 @@ namespace boost
                 const chrono::time_point<Clock, Duration>& t)
         {
           using namespace chrono;
-          system_clock::time_point     s_now = system_clock::now();
+          steady_clock::time_point     s_now = steady_clock::now();
           typename Clock::time_point  c_now = Clock::now();
           wait_until(lock, s_now + ceil<nanoseconds>(t - c_now));
           return Clock::now() < t ? cv_status::no_timeout : cv_status::timeout;
@@ -291,7 +295,7 @@ namespace boost
                 const chrono::duration<Rep, Period>& d)
         {
           using namespace chrono;
-          system_clock::time_point s_now = system_clock::now();
+          steady_clock::time_point s_now = steady_clock::now();
           steady_clock::time_point c_now = steady_clock::now();
           wait_until(lock, s_now + ceil<nanoseconds>(d));
           return steady_clock::now() - c_now < d ? cv_status::no_timeout :
@@ -320,7 +324,7 @@ namespace boost
         template <class lock_type>
         cv_status wait_until(
             lock_type& lk,
-            chrono::time_point<chrono::system_clock, chrono::nanoseconds> tp)
+            chrono::time_point<chrono::steady_clock, chrono::nanoseconds> tp)
         {
             using namespace chrono;
             nanoseconds d = tp.time_since_epoch();

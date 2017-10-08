@@ -93,9 +93,6 @@ void* timedwait_monotonic(void* arg)
 
 int main()
 {
-    /* pthread_t t1, t2, t3, t4; */
-    /* int id1 = 1, id2 = 2, id3 = 3, id4 = 4; */
-
     pthread_t t1, t2;
     int id1 = 1, id2 = 2;
 
@@ -103,27 +100,6 @@ int main()
     pthread_condattr_init(&attr);
     pthread_condattr_setclock(&attr, CLOCK_MONOTONIC);
     pthread_cond_init(&s_cond_monotonic, &attr);
-
-    /*
-     * do pthread_cond_signal() after 1 seconds
-     */
-    /* pthread_create(&t1, NULL, timedwait, (void*)&id1); */
-    /* sleep(1); */
-    /* { */
-    /*     pthread_mutex_lock(&s_mutex);     */
-    /*     pthread_cond_signal(&s_cond); */
-    /*     pthread_mutex_unlock(&s_mutex); */
-    /* } */
-    /* pthread_join(t1, NULL); */
-
-    /*
-     * do nothing - timedwait thread will be timed out
-     */
-    /* pthread_create(&t2, NULL, timedwait, (void*)&id2); */
-    /* { */
-    /*     ; */
-    /* } */
-    /* pthread_join(t2, NULL); */
 
     pthread_create(&t1, NULL, timedwait, (void*)&id1);
     pthread_create(&t2, NULL, timedwait_monotonic, (void*)&id2);
