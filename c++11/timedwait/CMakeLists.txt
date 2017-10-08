@@ -18,19 +18,11 @@ target_link_libraries(epoll_test pthread)
 add_executable(pthread_cond_test pthread_cond_test.c)
 target_link_libraries(pthread_cond_test pthread)
 
-#add_executable(timedwait timedwait.c)
-#target_link_libraries(timedwait pthread)
-
 add_executable(std_condition_variable_test std_condition_variable_test.cpp)
 target_link_libraries(std_condition_variable_test pthread)
 
 add_executable(boost_condition_variable_test boost_condition_variable_test.cpp)
 target_link_libraries(boost_condition_variable_test boost_thread boost_chrono boost_system pthread)
 
-#find_package(Boost)
-#if(Boost_FOUND)
-#  include_directories(${Boost_INCLUDE_DIRS})
-#  add_executable(boost_wait_until boost_wait_until.cpp)
-#  target_link_libraries(boost_wait_until boost_thread boost_chrono boost_system pthread)
-#endif()
-
+add_executable(boost_condition_variable_steady_test boost_condition_variable_steady_test.cpp)
+target_link_libraries(boost_condition_variable_steady_test boost_thread boost_chrono boost_system pthread)

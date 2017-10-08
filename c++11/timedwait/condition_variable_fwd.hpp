@@ -62,11 +62,7 @@ namespace boost
                 boost::throw_exception(thread_resource_error(res, "boost::condition_variable::condition_variable() constructor failed in pthread_mutex_init"));
             }
 #endif
-            pthread_condattr_t attr;
-            pthread_condattr_init(&attr);
-            pthread_condattr_setclock(&attr, CLOCK_MONOTONIC);
-            pthread_cond_init(&cond, &attr);
-            int const res2=pthread_cond_init(&cond,&attr);
+            int const res2=pthread_cond_init(&cond,NULL);
             if(res2)
             {
 #if defined BOOST_THREAD_PROVIDES_INTERRUPTIONS
@@ -163,13 +159,13 @@ namespace boost
         cv_status
         wait_until(
                 unique_lock<mutex>& lock,
-                const chrono::time_point<chrono::steady_clock, Duration>& t)
+                const chrono::time_point<chrono::system_clock, Duration>& t)
         {
           using namespace chrono;
-          typedef time_point<steady_clock, nanoseconds> nano_sys_tmpt;
+          typedef time_point<system_clock, nanoseconds> nano_sys_tmpt;
           wait_until(lock,
                         nano_sys_tmpt(ceil<nanoseconds>(t.time_since_epoch())));
-          return steady_clock::now() < t ? cv_status::no_timeout :
+          return system_clock::now() < t ? cv_status::no_timeout :
                                              cv_status::timeout;
         }
 
@@ -180,7 +176,7 @@ namespace boost
                 const chrono::time_point<Clock, Duration>& t)
         {
           using namespace chrono;
-          steady_clock::time_point     s_now = steady_clock::now();
+          system_clock::time_point     s_now = system_clock::now();
           typename Clock::time_point  c_now = Clock::now();
           wait_until(lock, s_now + ceil<nanoseconds>(t - c_now));
           return Clock::now() < t ? cv_status::no_timeout : cv_status::timeout;
@@ -209,7 +205,7 @@ namespace boost
                 const chrono::duration<Rep, Period>& d)
         {
           using namespace chrono;
-          steady_clock::time_point s_now = steady_clock::now();
+          system_clock::time_point s_now = system_clock::now();
           steady_clock::time_point c_now = steady_clock::now();
           wait_until(lock, s_now + ceil<nanoseconds>(d));
           return steady_clock::now() - c_now < d ? cv_status::no_timeout :
@@ -249,7 +245,7 @@ namespace boost
 #ifdef BOOST_THREAD_USES_CHRONO
         inline cv_status wait_until(
             unique_lock<mutex>& lk,
-            chrono::time_point<chrono::steady_clock, chrono::nanoseconds> tp)
+            chrono::time_point<chrono::system_clock, chrono::nanoseconds> tp)
         {
             using namespace chrono;
             nanoseconds d = tp.time_since_epoch();
@@ -263,9 +259,9 @@ namespace boost
     BOOST_THREAD_DECL void notify_all_at_thread_exit(condition_variable& cond, unique_lock<mutex> lk);
 
     //
-    // condition_variable2
+    // condition_variable_steady
     //
-    class condition_variable2
+    class condition_variable_steady
     {
     private:
 #if defined BOOST_THREAD_PROVIDES_INTERRUPTIONS
@@ -288,14 +284,14 @@ namespace boost
         }
 
     public:
-      BOOST_THREAD_NO_COPYABLE(condition_variable2)
-        condition_variable2()
+      BOOST_THREAD_NO_COPYABLE(condition_variable_steady)
+        condition_variable_steady()
         {
 #if defined BOOST_THREAD_PROVIDES_INTERRUPTIONS
             int const res=pthread_mutex_init(&internal_mutex,NULL);
             if(res)
             {
-                boost::throw_exception(thread_resource_error(res, "boost::condition_variable2::condition_variable2() constructor failed in pthread_mutex_init"));
+                boost::throw_exception(thread_resource_error(res, "boost::condition_variable_steady::condition_variable_steady() constructor failed in pthread_mutex_init"));
             }
 #endif
             pthread_condattr_t attr;
@@ -308,10 +304,10 @@ namespace boost
 #if defined BOOST_THREAD_PROVIDES_INTERRUPTIONS
                 BOOST_VERIFY(!pthread_mutex_destroy(&internal_mutex));
 #endif
-                boost::throw_exception(thread_resource_error(res2, "boost::condition_variable2::condition_variable2() constructor failed in pthread_cond_init"));
+                boost::throw_exception(thread_resource_error(res2, "boost::condition_variable_steady::condition_variable_steady() constructor failed in pthread_cond_init"));
             }
         }
-        ~condition_variable2()
+        ~condition_variable_steady()
         {
             int ret;
 #if defined BOOST_THREAD_PROVIDES_INTERRUPTIONS
@@ -496,9 +492,9 @@ namespace boost
 #endif
     };
 
-    BOOST_THREAD_DECL void notify_all_at_thread_exit(condition_variable2& cond, unique_lock<mutex> lk);
+    BOOST_THREAD_DECL void notify_all_at_thread_exit(condition_variable_steady& cond, unique_lock<mutex> lk);
     //
-    // end of condition_variable2
+    // end of condition_variable_steady
     //
 }
 

@@ -143,14 +143,14 @@ namespace boost
     }
 
     //
-    // condition_variable2
+    // condition_variable_steady
     //
-    inline void condition_variable2::wait(unique_lock<mutex>& m)
+    inline void condition_variable_steady::wait(unique_lock<mutex>& m)
     {
 #if defined BOOST_THREAD_THROW_IF_PRECONDITION_NOT_SATISFIED
         if(! m.owns_lock())
         {
-            boost::throw_exception(condition_error(-1, "boost::condition_variable2::wait() failed precondition mutex not owned"));
+            boost::throw_exception(condition_error(-1, "boost::condition_variable_steady::wait() failed precondition mutex not owned"));
         }
 #endif
         int res=0;
@@ -175,18 +175,18 @@ namespace boost
 #endif
         if(res)
         {
-            boost::throw_exception(condition_error(res, "boost::condition_variable2::wait failed in pthread_cond_wait"));
+            boost::throw_exception(condition_error(res, "boost::condition_variable_steady::wait failed in pthread_cond_wait"));
         }
     }
 
-    inline bool condition_variable2::do_wait_until(
+    inline bool condition_variable_steady::do_wait_until(
                 unique_lock<mutex>& m,
                 struct timespec const &timeout)
     {
 #if defined BOOST_THREAD_THROW_IF_PRECONDITION_NOT_SATISFIED
         if (!m.owns_lock())
         {
-            boost::throw_exception(condition_error(EPERM, "boost::condition_variable2::do_wait_until() failed precondition mutex not owned"));
+            boost::throw_exception(condition_error(EPERM, "boost::condition_variable_steady::do_wait_until() failed precondition mutex not owned"));
         }
 #endif
         thread_cv_detail::lock_on_exit<unique_lock<mutex> > guard;
@@ -211,12 +211,12 @@ namespace boost
         }
         if(cond_res)
         {
-            boost::throw_exception(condition_error(cond_res, "boost::condition_variable2::do_wait_until failed in pthread_cond_timedwait"));
+            boost::throw_exception(condition_error(cond_res, "boost::condition_variable_steady::do_wait_until failed in pthread_cond_timedwait"));
         }
         return true;
     }
 
-    inline void condition_variable2::notify_one() BOOST_NOEXCEPT
+    inline void condition_variable_steady::notify_one() BOOST_NOEXCEPT
     {
 #if defined BOOST_THREAD_PROVIDES_INTERRUPTIONS
         boost::pthread::pthread_mutex_scoped_lock internal_lock(&internal_mutex);
@@ -224,7 +224,7 @@ namespace boost
         BOOST_VERIFY(!pthread_cond_signal(&cond));
     }
 
-    inline void condition_variable2::notify_all() BOOST_NOEXCEPT
+    inline void condition_variable_steady::notify_all() BOOST_NOEXCEPT
     {
 #if defined BOOST_THREAD_PROVIDES_INTERRUPTIONS
         boost::pthread::pthread_mutex_scoped_lock internal_lock(&internal_mutex);
@@ -232,9 +232,9 @@ namespace boost
         BOOST_VERIFY(!pthread_cond_broadcast(&cond));
     }
     //
-    // end of condition_variable2
+    // end of condition_variable_steady
     //
-    
+
     class condition_variable_any
     {
         pthread_mutex_t internal_mutex;
@@ -249,11 +249,7 @@ namespace boost
             {
                 boost::throw_exception(thread_resource_error(res, "boost::condition_variable_any::condition_variable_any() failed in pthread_mutex_init"));
             }
-            pthread_condattr_t attr;
-            pthread_condattr_init(&attr);
-            pthread_condattr_setclock(&attr, CLOCK_MONOTONIC);
-            pthread_cond_init(&cond, &attr);
-            int const res2=pthread_cond_init(&cond,&attr);
+            int const res2=pthread_cond_init(&cond,NULL);
             if(res2)
             {
                 BOOST_VERIFY(!pthread_mutex_destroy(&internal_mutex));
@@ -342,13 +338,13 @@ namespace boost
         cv_status
         wait_until(
                 lock_type& lock,
-                const chrono::time_point<chrono::steady_clock, Duration>& t)
+                const chrono::time_point<chrono::system_clock, Duration>& t)
         {
           using namespace chrono;
-          typedef time_point<steady_clock, nanoseconds> nano_sys_tmpt;
+          typedef time_point<system_clock, nanoseconds> nano_sys_tmpt;
           wait_until(lock,
                         nano_sys_tmpt(ceil<nanoseconds>(t.time_since_epoch())));
-          return steady_clock::now() < t ? cv_status::no_timeout :
+          return system_clock::now() < t ? cv_status::no_timeout :
                                              cv_status::timeout;
         }
 
@@ -359,7 +355,7 @@ namespace boost
                 const chrono::time_point<Clock, Duration>& t)
         {
           using namespace chrono;
-          steady_clock::time_point     s_now = steady_clock::now();
+          system_clock::time_point     s_now = system_clock::now();
           typename Clock::time_point  c_now = Clock::now();
           wait_until(lock, s_now + ceil<nanoseconds>(t - c_now));
           return Clock::now() < t ? cv_status::no_timeout : cv_status::timeout;
@@ -388,7 +384,7 @@ namespace boost
                 const chrono::duration<Rep, Period>& d)
         {
           using namespace chrono;
-          steady_clock::time_point s_now = steady_clock::now();
+          system_clock::time_point s_now = system_clock::now();
           steady_clock::time_point c_now = steady_clock::now();
           wait_until(lock, s_now + ceil<nanoseconds>(d));
           return steady_clock::now() - c_now < d ? cv_status::no_timeout :
@@ -417,7 +413,7 @@ namespace boost
         template <class lock_type>
         cv_status wait_until(
             lock_type& lk,
-            chrono::time_point<chrono::steady_clock, chrono::nanoseconds> tp)
+            chrono::time_point<chrono::system_clock, chrono::nanoseconds> tp)
         {
             using namespace chrono;
             nanoseconds d = tp.time_since_epoch();
