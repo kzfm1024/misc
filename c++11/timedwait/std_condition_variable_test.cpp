@@ -3,10 +3,8 @@
 #include <thread>
 #include <mutex>
 #include <condition_variable>
+#include <cassert>
 
-#include <time.h>
-#include <assert.h>
- 
 static std::mutex s_mutex;
 static std::condition_variable s_cond;
 

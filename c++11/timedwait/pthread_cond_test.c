@@ -93,8 +93,11 @@ void* timedwait_monotonic(void* arg)
 
 int main()
 {
-    pthread_t t1, t2, t3, t4;
-    int id1 = 1, id2 = 2, id3 = 3, id4 = 4;
+    /* pthread_t t1, t2, t3, t4; */
+    /* int id1 = 1, id2 = 2, id3 = 3, id4 = 4; */
+
+    pthread_t t1, t2;
+    int id1 = 1, id2 = 2;
 
     pthread_condattr_t attr;
     pthread_condattr_init(&attr);
@@ -104,37 +107,37 @@ int main()
     /*
      * do pthread_cond_signal() after 1 seconds
      */
-    pthread_create(&t1, NULL, timedwait, (void*)&id1);
-    sleep(1);
-    {
-        pthread_mutex_lock(&s_mutex);    
-        pthread_cond_signal(&s_cond);
-        pthread_mutex_unlock(&s_mutex);
-    }
-    pthread_join(t1, NULL);
+    /* pthread_create(&t1, NULL, timedwait, (void*)&id1); */
+    /* sleep(1); */
+    /* { */
+    /*     pthread_mutex_lock(&s_mutex);     */
+    /*     pthread_cond_signal(&s_cond); */
+    /*     pthread_mutex_unlock(&s_mutex); */
+    /* } */
+    /* pthread_join(t1, NULL); */
 
     /*
      * do nothing - timedwait thread will be timed out
      */
-    pthread_create(&t2, NULL, timedwait, (void*)&id2);
-    {
-        ;
-    }
-    pthread_join(t2, NULL);
+    /* pthread_create(&t2, NULL, timedwait, (void*)&id2); */
+    /* { */
+    /*     ; */
+    /* } */
+    /* pthread_join(t2, NULL); */
 
-    /*
-     *  set the clock forward 1 minute  - timedwait thread will be timed out
-     */
-    pthread_create(&t3, NULL, timedwait, (void*)&id3);
-    pthread_create(&t4, NULL, timedwait_monotonic, (void*)&id4);
+    pthread_create(&t1, NULL, timedwait, (void*)&id1);
+    pthread_create(&t2, NULL, timedwait_monotonic, (void*)&id2);
     sleep(1);
     {
+        /*
+         *  set the clock forward 1 minute  - timedwait thread will be timed out
+         */
         struct timespec now;
         clock_gettime(CLOCK_REALTIME, &now);
         now.tv_sec += 60;
         int ret = clock_settime(CLOCK_REALTIME, &now);
         assert(ret == 0); // root privilege is necessary for clock_settime()
     }
-    pthread_join(t3, NULL);
-    pthread_join(t4, NULL);
+    pthread_join(t1, NULL);
+    pthread_join(t2, NULL);
 }

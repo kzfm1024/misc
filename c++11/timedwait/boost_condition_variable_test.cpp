@@ -1,13 +1,11 @@
 #include <iostream>
 #include <chrono>
 #include <thread>
+#include <cassert>
 #include <boost/thread.hpp>
 
-#include <time.h>
-#include <assert.h>
- 
 static boost::mutex s_mutex;
-static boost::condition_variable_any s_cond;
+static boost::condition_variable s_cond;
 
 void timedwait(int id)
 {
@@ -54,22 +52,22 @@ int main()
     //
     // do notify_one() after 1 seconds
     //
-    std::thread t1(timedwait, 1);
-    std::this_thread::sleep_for(std::chrono::seconds(1));
-    {
-        boost::unique_lock<boost::mutex> lock(s_mutex);
-        s_cond.notify_one();
-    }
-    t1.join();
+    // std::thread t1(timedwait, 1);
+    // std::this_thread::sleep_for(std::chrono::seconds(1));
+    // {
+    //     boost::unique_lock<boost::mutex> lock(s_mutex);
+    //     s_cond.notify_one();
+    // }
+    // t1.join();
 
     //
     // do nothing - timedwait thread will be timed out
     //
-    std::thread t2(timedwait, 2);
-    {
-        ;
-    }
-    t2.join();
+    // std::thread t2(timedwait, 2);
+    // {
+    //     ;
+    // }
+    // t2.join();
 
     //
     // set the clock forward 1 minute
