@@ -142,6 +142,99 @@ namespace boost
         BOOST_VERIFY(!pthread_cond_broadcast(&cond));
     }
 
+    //
+    // condition_variable2
+    //
+    inline void condition_variable2::wait(unique_lock<mutex>& m)
+    {
+#if defined BOOST_THREAD_THROW_IF_PRECONDITION_NOT_SATISFIED
+        if(! m.owns_lock())
+        {
+            boost::throw_exception(condition_error(-1, "boost::condition_variable2::wait() failed precondition mutex not owned"));
+        }
+#endif
+        int res=0;
+        {
+#if defined BOOST_THREAD_PROVIDES_INTERRUPTIONS
+            thread_cv_detail::lock_on_exit<unique_lock<mutex> > guard;
+            detail::interruption_checker check_for_interruption(&internal_mutex,&cond);
+            guard.activate(m);
+            do {
+              res = pthread_cond_wait(&cond,&internal_mutex);
+            } while (res == EINTR);
+#else
+            //boost::pthread::pthread_mutex_scoped_lock check_for_interruption(&internal_mutex);
+            pthread_mutex_t* the_mutex = m.mutex()->native_handle();
+            do {
+              res = pthread_cond_wait(&cond,the_mutex);
+            } while (res == EINTR);
+#endif
+        }
+#if defined BOOST_THREAD_PROVIDES_INTERRUPTIONS
+        this_thread::interruption_point();
+#endif
+        if(res)
+        {
+            boost::throw_exception(condition_error(res, "boost::condition_variable2::wait failed in pthread_cond_wait"));
+        }
+    }
+
+    inline bool condition_variable2::do_wait_until(
+                unique_lock<mutex>& m,
+                struct timespec const &timeout)
+    {
+#if defined BOOST_THREAD_THROW_IF_PRECONDITION_NOT_SATISFIED
+        if (!m.owns_lock())
+        {
+            boost::throw_exception(condition_error(EPERM, "boost::condition_variable2::do_wait_until() failed precondition mutex not owned"));
+        }
+#endif
+        thread_cv_detail::lock_on_exit<unique_lock<mutex> > guard;
+        int cond_res;
+        {
+#if defined BOOST_THREAD_PROVIDES_INTERRUPTIONS
+            detail::interruption_checker check_for_interruption(&internal_mutex,&cond);
+            guard.activate(m);
+            cond_res=pthread_cond_timedwait(&cond,&internal_mutex,&timeout);
+#else
+            //boost::pthread::pthread_mutex_scoped_lock check_for_interruption(&internal_mutex);
+            pthread_mutex_t* the_mutex = m.mutex()->native_handle();
+            cond_res=pthread_cond_timedwait(&cond,the_mutex,&timeout);
+#endif
+        }
+#if defined BOOST_THREAD_PROVIDES_INTERRUPTIONS
+        this_thread::interruption_point();
+#endif
+        if(cond_res==ETIMEDOUT)
+        {
+            return false;
+        }
+        if(cond_res)
+        {
+            boost::throw_exception(condition_error(cond_res, "boost::condition_variable2::do_wait_until failed in pthread_cond_timedwait"));
+        }
+        return true;
+    }
+
+    inline void condition_variable2::notify_one() BOOST_NOEXCEPT
+    {
+#if defined BOOST_THREAD_PROVIDES_INTERRUPTIONS
+        boost::pthread::pthread_mutex_scoped_lock internal_lock(&internal_mutex);
+#endif
+        BOOST_VERIFY(!pthread_cond_signal(&cond));
+    }
+
+    inline void condition_variable2::notify_all() BOOST_NOEXCEPT
+    {
+#if defined BOOST_THREAD_PROVIDES_INTERRUPTIONS
+        boost::pthread::pthread_mutex_scoped_lock internal_lock(&internal_mutex);
+#endif
+        BOOST_VERIFY(!pthread_cond_broadcast(&cond));
+    }
+    //
+    // end of condition_variable2
+    //
+    
     class condition_variable_any
     {
         pthread_mutex_t internal_mutex;
