@@ -2,7 +2,7 @@
 
 bool EasyPass::runOnFunction(Function &F){
 	//fprintf(stderr, "Function Name : %s\n", F.getName().str().c_str());
-	llvm::errs() << "Function Name" << F.getName().str() << "\n";
+	llvm::errs() << "Function Name : " << F.getName().str() << "\n";
 	return false;
 }
 

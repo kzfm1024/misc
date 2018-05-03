@@ -2,7 +2,7 @@
 #define __EASYPASS_H__
 
 #include<cstdio>
-#include<llvm/Function.h>
+#include<llvm/IR/Function.h>
 #include<llvm/Pass.h>
 #include<llvm/Support/raw_ostream.h>
 using namespace llvm;
