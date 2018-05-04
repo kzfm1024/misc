@@ -1,0 +1,1 @@
+﻿function 掛け算(引数1, 引数2)     var a,b,c;    begin      a:=引数1; b:=引数2; c:=0;      while b>0 do        begin          if odd b then c:=c+a;          a:=2*a; b:=b/2;        end;      return c;    end; const 定数7=7,定数85=85;var 変数1,変数2;begin  変数1:=定数7; 変数2:=定数85;   write 変数1; write 変数2; writeln; write 掛け算(変数1,変数2); writelnend.
