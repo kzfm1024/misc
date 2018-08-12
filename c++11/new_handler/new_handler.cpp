@@ -15,23 +15,23 @@ void myfunc3(void)
 
 static void myfunc2(void) // "static" means don't export the symbol...
 {
-    myfunc3 ();
+    myfunc3();
 }
 
 void myfunc(int ncalls)
 {
     if (ncalls > 1)
-        myfunc (ncalls - 1);
+        myfunc(ncalls - 1);
     else
-        myfunc2 ();
+        myfunc2();
 }
 
 void exception_test(void)
 {
     try {
-        myfunc (3);
+        myfunc(3);
     } catch (const std::exception & ex) {
-        std::cerr << __func__ << " ex.what() " << ex.what () << std::endl;
+        std::cerr << __func__ << " ex.what() " << ex.what() << std::endl;
         throw;
     }
 }
@@ -39,15 +39,15 @@ void exception_test(void)
 int main(void)
 {
     std::new_handler handler = on_new_failed;
-    std::set_new_handler (handler);
+    std::set_new_handler(handler);
 
     try {
-        std::thread t (exception_test);
+        std::thread t(exception_test);
         t.join ();
-    } catch (const std::exception & ex) {
+    } catch(const std::exception & ex) {
         //
         // can't catch exceptions in other threads
         //
-        std::cerr << __func__ << " ex.what() " << ex.what () << std::endl;
+        std::cerr << __func__ << " ex.what() " << ex.what() << std::endl;
     }
 }
