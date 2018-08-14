@@ -1,0 +1,16 @@
+// systemd extension
+
+// lockfree journal API
+
+lf_journal_init()
+lf_journal_print()
+
+/var/log/lfjournal
+/var/log/lfjournal/lfdata
+/var/log/lfjournal/ctrl
+/var/log/lfjournal/control
+/var/log/lfjournal/data0/*.journal
+/var/log/lfjournal/data1/*.journal
+
+lfjournal_control 構造体
+
