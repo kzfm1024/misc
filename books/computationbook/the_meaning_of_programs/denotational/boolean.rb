@@ -1,4 +1,4 @@
-require 'execjs/json'
+#require 'execjs/json'
 require_relative '../syntax/boolean'
 
 class Boolean
@@ -6,7 +6,7 @@ class Boolean
     "-> e { #{value.inspect} }"
   end
 
-  def to_javascript
-    "function (e) { return #{ExecJS::JSON.encode(value)}; }"
-  end
+#  def to_javascript
+#    "function (e) { return #{ExecJS::JSON.encode(value)}; }"
+#  end
 end

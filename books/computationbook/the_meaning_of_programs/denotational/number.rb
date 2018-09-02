@@ -1,4 +1,4 @@
-require 'execjs/json'
+#require 'execjs/json'
 require_relative '../syntax/number'
 
 class Number
@@ -6,7 +6,7 @@ class Number
     "-> e { #{value.inspect} }"
   end
 
-  def to_javascript
-    "function (e) { return #{ExecJS::JSON.encode(value)}; }"
-  end
+#  def to_javascript
+#    "function (e) { return #{ExecJS::JSON.encode(value)}; }"
+#  end
 end

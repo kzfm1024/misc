@@ -1,4 +1,4 @@
-require 'execjs'
+#require 'execjs'
 
 RSpec::Matchers.define :look_like do |expected|
   match do |subject|
@@ -85,8 +85,8 @@ RSpec::Matchers.define :mean do |expected|
     case denotation_language
     when :ruby
       eval(subject.to_ruby)[environment]
-    when :javascript
-      ExecJS.eval("#{subject.to_javascript}(#{ExecJS::JSON.encode(environment)})")
+#    when :javascript
+#      ExecJS.eval("#{subject.to_javascript}(#{ExecJS::JSON.encode(environment)})")
     end
   end
 
