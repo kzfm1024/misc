@@ -1,0 +1,7 @@
+<library path="lib/libListenerNodeletClass">
+  <class name="example_pkg/ListenerNodeletClass" type="example_pkg::ListenerNodeletClass" base_class_type="nodelet::Nodelet">
+  <description>
+  This is my nodelet.
+  </description>
+  </class>
+</library>
