@@ -120,7 +120,7 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
-#add_library(mynodelet src/MyNodeletClass.cpp)
+#set(CMAKE_CXX_FLAGS "-fsanitize=address")
 add_library(MyNodeletClass src/MyNodeletClass.cpp)
 add_library(TalkerNodeletClass src/TalkerNodeletClass.cpp)
 add_library(ListenerNodeletClass src/ListenerNodeletClass.cpp)
