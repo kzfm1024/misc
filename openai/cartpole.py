@@ -8,24 +8,27 @@ import time
 class CartPole:
 
     def __init__(self, ):
+        self.epsilon = 0.25
+
+
         self.env = gym.make('CartPole-v0')
-        self.q_table = np.zeros((100, 100, 100, 100, 2))
+        self.q_table = np.zeros((50, 50, 50, 50, 2))
         # print(self.env.observation_space.low)
         # [-4.8000002e+00 -3.4028235e+38 -4.1887903e-01 -3.4028235e+38]
         # print(self.env.observation_space.high)
         # [4.8000002e+00 3.4028235e+38 4.1887903e-01 3.4028235e+38]
         
         self.observation_min = self.env.observation_space.low
-        self.observation_min[1] = -3.0 # cart velocity 
-        self.observation_min[3] = -4.0 # pole velocity at tip
+        self.observation_min[1] = -2.0 # cart velocity 
+        self.observation_min[3] = -3.5 # pole velocity at tip
         print(self.observation_min)
         
         self.observation_max = self.env.observation_space.high
-        self.observation_max[1] = 3.0 # cart velocity 
-        self.observation_max[3] = 4.0 # pole velocity at tip
+        self.observation_max[1] = 2.0 # cart velocity 
+        self.observation_max[3] = 3.5 # pole velocity at tip
         print(self.observation_max)
 
-        self.observation_delta = (self.observation_max - self.observation_min) / 100
+        self.observation_delta = (self.observation_max - self.observation_min) / 50
         print(self.observation_delta)
 
     def __del__(self):
@@ -50,7 +53,8 @@ class CartPole:
         return cart_p, cart_v, pole_p, pole_v
 
     def get_action(self, observation):
-        epsilon = 0.002
+        #epsilon = 0.01
+        epsilon = 0.25
         if np.random.uniform(0, 1) > epsilon:
             cart_p, cart_v, pole_p, pole_v = self.get_status(observation)
             action = np.argmax(self.q_table[cart_p][cart_v][pole_p][pole_v])
@@ -101,7 +105,7 @@ class CartPole:
                 observation = next_observation
                 if done:
                     print('episode {0} timessteps {1} total_reward {2}'.format(ep, t, total_reward))
-                    print(next_observation)
+                    #print(next_observation)
                     rewards.append(total_reward)
                     break
         return rewards
@@ -109,7 +113,7 @@ class CartPole:
 def main():
     cartpole = CartPole()
     #cartpole.simulate_random_action(10, 200)
-    cartpole.learn(10000, 200)
+    cartpole.learn(50000, 200)
 
 if __name__ == '__main__':
     main()
