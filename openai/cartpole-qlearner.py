@@ -111,6 +111,7 @@ class CartPoleQLearner:
                 observation = next_observation
             #print('episode {0} timessteps {1} total_reward {2}'.format(ep+1, num_timesteps, total_reward))
             rewards.append(total_reward)
+        return rewards
 
 if __name__ == '__main__':
     learner = CartPoleQLearner()
