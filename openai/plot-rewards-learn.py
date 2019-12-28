@@ -29,7 +29,7 @@ def main():
     plt.plot(average4, label='epsilon=0.4')
     plt.plot(average5, label='epsilon=0.5')
     plt.legend(loc="upper left")
-    plt.show()
+    plt.savefig('rewards.png', dpi=200)
 
 if __name__ == '__main__':
     main()
