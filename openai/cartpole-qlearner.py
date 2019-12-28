@@ -7,7 +7,7 @@ import time
 
 class CartPoleQLearner:
 
-    def __init__(self, ):
+    def __init__(self, *, debug=False):
         self.gamma = 0.9 # 割引率
         self.alpha = 0.1 # 学習率
 
@@ -25,15 +25,17 @@ class CartPoleQLearner:
         self.obs_min = self.env.observation_space.low
         self.obs_min[1] = -2.0 # cart velocity 
         self.obs_min[3] = -3.5 # pole velocity at tip
-        print('obs_min   ' + str(self.obs_min))
         
         self.obs_max = self.env.observation_space.high
         self.obs_max[1] = 2.0 # cart velocity 
         self.obs_max[3] = 3.5 # pole velocity at tip
-        print('obs_max   ' + str(self.obs_max))
 
         self.obs_delta = (self.obs_max - self.obs_min) / 50
-        print('obs_delta ' + str(self.obs_delta))
+
+        if debug:
+            print('obs_min   ' + str(self.obs_min))
+            print('obs_max   ' + str(self.obs_max))
+            print('obs_delta ' + str(self.obs_delta))
 
     def __del__(self):
         self.env.close()
@@ -61,6 +63,9 @@ class CartPoleQLearner:
             return np.argmax(self.qtable[cart_p][cart_v][pole_p][pole_v])
         else:
             return np.random.choice([0, 1])
+
+    def reset_qtable(self):
+        self.qtable = np.zeros((50, 50, 50, 50, 2))
 
     def save_qtable(self, path):
         np.save(path, self.qtable)
@@ -92,38 +97,57 @@ class CartPoleQLearner:
                 total_reward += reward
                 observation = next_observation
                 if done:
-                    #print('episode {0} timessteps {1} total_reward {2}'.format(ep+1, t+1, total_reward))
                     rewards.append(total_reward)
                     break
         return rewards
 
-    def run(self, num_episodes, num_timesteps, *, epsilon):
+    def run(self, num_episodes, num_timesteps, *, epsilon=0.0, render=False):
         rewards = []
         for ep in range(num_episodes):
             observation = self.env.reset()
             total_reward = 0
             for t in range(num_timesteps):
-                #self.env.render()
-                #time.sleep(0.033)
+                if render:
+                    self.env.render()
+                    time.sleep(0.033)
                 action = self.action(observation, epsilon)
                 next_observation, reward, done, _ = self.env.step(action)
                 total_reward += reward
                 observation = next_observation
-            #print('episode {0} timessteps {1} total_reward {2}'.format(ep+1, num_timesteps, total_reward))
             rewards.append(total_reward)
         return rewards
 
 if __name__ == '__main__':
     learner = CartPoleQLearner()
     rewards = learner.learn(50000, 200, epsilon=0.1)
-    learner.save_qtable('qtable-qlearn_ep50000')
-    np.save('rewards-qlearn_ep50000', rewards)
+    learner.save_qtable('qtable-learn-epsilon0.1')
+    np.save('rewards-learn-epsilon0.1', rewards)
+
+    learner.reset_qtable()
+    rewards = learner.learn(50000, 200, epsilon=0.2)
+    learner.save_qtable('qtable-learn-epsilon0.2')
+    np.save('rewards-learn-epsilon0.2', rewards)
+
+    learner.reset_qtable()
+    rewards = learner.learn(50000, 200, epsilon=0.3)
+    learner.save_qtable('qtable-learn-epsilon0.3')
+    np.save('rewards-learn-epsilon0.3', rewards)
 
     runner = CartPoleQLearner()
-    runner.load_qtable('qtable-qlearn_ep50000.npy')
-    rewards = runner.run(100, 200, epsilon=0.0) # learned action
-    #print('average reward {0}'.format(sum(rewards) / len(rewards)))
-    np.save('rewards-learned_ep100', rewards)
+    runner.load_qtable('qtable-learn-epsilon0.1.npy')
+    rewards = runner.run(100, 200)
+    np.save('rewards-run-epsilon0.1', rewards)
+    print('average rewards (epsilon=0.1) {0}'.format(sum(rewards) / len(rewards)))
 
-    #rewards = runner.run(100, 200, epsilon=1.0) # random action
-    #np.save('rewards-random_ep100', rewards)
+    runner.load_qtable('qtable-learn-epsilon0.2.npy')
+    rewards = runner.run(100, 200)
+    np.save('rewards-run-epsilon0.2', rewards)
+    print('average rewards (epsilon=0.2) {0}'.format(sum(rewards) / len(rewards)))
+
+    runner.load_qtable('qtable-learn-epsilon0.3.npy')
+    rewards = runner.run(100, 200)
+    np.save('rewards-run-epsilon0.3', rewards)
+    print('average rewards (epsilon=0.3) {0}'.format(sum(rewards) / len(rewards)))
+
+    #runner.run(100, 10, epsilon=1.0, render=True) # random action
+    #runner.run(100, 10, epsilon=0.0, render=True) # learned action
