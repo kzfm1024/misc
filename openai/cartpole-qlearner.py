@@ -133,21 +133,41 @@ if __name__ == '__main__':
     learner.save_qtable('qtable-learn-epsilon0.3')
     np.save('rewards-learn-epsilon0.3', rewards)
 
+    learner.reset_qtable()
+    rewards = learner.learn(50000, 200, epsilon=0.4)
+    learner.save_qtable('qtable-learn-epsilon0.4')
+    np.save('rewards-learn-epsilon0.4', rewards)
+
+    learner.reset_qtable()
+    rewards = learner.learn(50000, 200, epsilon=0.5)
+    learner.save_qtable('qtable-learn-epsilon0.5')
+    np.save('rewards-learn-epsilon0.5', rewards)
+
     runner = CartPoleQLearner()
     runner.load_qtable('qtable-learn-epsilon0.1.npy')
     rewards = runner.run(100, 200)
     np.save('rewards-run-epsilon0.1', rewards)
-    print('average rewards (epsilon=0.1) {0}'.format(sum(rewards) / len(rewards)))
+    print('average of rewards (epsilon=0.1) {0}'.format(sum(rewards) / len(rewards)))
 
     runner.load_qtable('qtable-learn-epsilon0.2.npy')
     rewards = runner.run(100, 200)
     np.save('rewards-run-epsilon0.2', rewards)
-    print('average rewards (epsilon=0.2) {0}'.format(sum(rewards) / len(rewards)))
+    print('average of rewards (epsilon=0.2) {0}'.format(sum(rewards) / len(rewards)))
 
     runner.load_qtable('qtable-learn-epsilon0.3.npy')
     rewards = runner.run(100, 200)
     np.save('rewards-run-epsilon0.3', rewards)
-    print('average rewards (epsilon=0.3) {0}'.format(sum(rewards) / len(rewards)))
+    print('average of rewards (epsilon=0.3) {0}'.format(sum(rewards) / len(rewards)))
+
+    runner.load_qtable('qtable-learn-epsilon0.4.npy')
+    rewards = runner.run(100, 200)
+    np.save('rewards-run-epsilon0.4', rewards)
+    print('average of rewards (epsilon=0.4) {0}'.format(sum(rewards) / len(rewards)))
+
+    runner.load_qtable('qtable-learn-epsilon0.5.npy')
+    rewards = runner.run(100, 200)
+    np.save('rewards-run-epsilon0.5', rewards)
+    print('average of rewards (epsilon=0.5) {0}'.format(sum(rewards) / len(rewards)))
 
     #runner.run(100, 10, epsilon=1.0, render=True) # random action
     #runner.run(100, 10, epsilon=0.0, render=True) # learned action
