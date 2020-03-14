@@ -20,7 +20,7 @@
 #ifndef _GST_RS2SRC_H_
 #define _GST_RS2SRC_H_
 
-#include <gst/base/gstbasesrc.h>
+#include <gst/base/gstpushsrc.h>
 
 G_BEGIN_DECLS
 
@@ -35,16 +35,14 @@ typedef struct _GstRs2srcClass GstRs2srcClass;
 
 struct _GstRs2src
 {
-    GstBaseSrc base_rs2src;
-/*
-    GstPad *srcpad;
-    gboolean silent;
-*/
+    // GstBaseSrc base_rs2src;
+    GstPushSrc push_rs2src;
 };
 
 struct _GstRs2srcClass
 {
-    GstBaseSrcClass base_rs2src_class;
+    // GstBaseSrcClass base_rs2src_class;
+    GstPushSrcClass parent_class;    
 };
 
 GType gst_rs2src_get_type (void);

@@ -51,31 +51,7 @@ static void gst_rs2src_get_property (GObject * object,
 static void gst_rs2src_dispose (GObject * object);
 static void gst_rs2src_finalize (GObject * object);
 
-static GstCaps *gst_rs2src_get_caps (GstBaseSrc * src, GstCaps * filter);
-static gboolean gst_rs2src_negotiate (GstBaseSrc * src);
-static GstCaps *gst_rs2src_fixate (GstBaseSrc * src, GstCaps * caps);
-static gboolean gst_rs2src_set_caps (GstBaseSrc * src, GstCaps * caps);
-static gboolean gst_rs2src_decide_allocation (GstBaseSrc * src,
-    GstQuery * query);
-static gboolean gst_rs2src_start (GstBaseSrc * src);
-static gboolean gst_rs2src_stop (GstBaseSrc * src);
-static void gst_rs2src_get_times (GstBaseSrc * src, GstBuffer * buffer,
-    GstClockTime * start, GstClockTime * end);
-static gboolean gst_rs2src_get_size (GstBaseSrc * src, guint64 * size);
-static gboolean gst_rs2src_is_seekable (GstBaseSrc * src);
-static gboolean gst_rs2src_prepare_seek_segment (GstBaseSrc * src,
-    GstEvent * seek, GstSegment * segment);
-static gboolean gst_rs2src_do_seek (GstBaseSrc * src, GstSegment * segment);
-static gboolean gst_rs2src_unlock (GstBaseSrc * src);
-static gboolean gst_rs2src_unlock_stop (GstBaseSrc * src);
-static gboolean gst_rs2src_query (GstBaseSrc * src, GstQuery * query);
-static gboolean gst_rs2src_event (GstBaseSrc * src, GstEvent * event);
-static GstFlowReturn gst_rs2src_create (GstBaseSrc * src, guint64 offset,
-    guint size, GstBuffer ** buf);
-static GstFlowReturn gst_rs2src_alloc (GstBaseSrc * src, guint64 offset,
-    guint size, GstBuffer ** buf);
-static GstFlowReturn gst_rs2src_fill (GstBaseSrc * src, guint64 offset,
-    guint size, GstBuffer * buf);
+static GstFlowReturn gst_rs2src_fill (GstPushSrc * src, GstBuffer * buf);
 
 enum
 {
@@ -83,7 +59,6 @@ enum
 };
 
 /* pad templates */
-#if 1
 static GstStaticPadTemplate gst_rs2src_src_template =
 GST_STATIC_PAD_TEMPLATE ("src",
     GST_PAD_SRC,
@@ -93,17 +68,9 @@ GST_STATIC_PAD_TEMPLATE ("src",
         "format = (string)RGB" ", "
         "width = 640" ", "
         "height = 480" ", "
-        "framerate = 30"
+        "framerate = 30/1"
         )
     );
-#else
-static GstStaticPadTemplate gst_rs2src_src_template =
-GST_STATIC_PAD_TEMPLATE ("src",
-    GST_PAD_SRC,
-    GST_PAD_ALWAYS,
-    GST_STATIC_CAPS ("application/unknown")
-    );
-#endif
 
 /* class initialization */
 
@@ -114,10 +81,9 @@ G_DEFINE_TYPE_WITH_CODE (GstRs2src, gst_rs2src, GST_TYPE_BASE_SRC,
 static void
 gst_rs2src_class_init (GstRs2srcClass * klass)
 {
-    GST_INFO(__FUNCTION__);
-    
   GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
   GstBaseSrcClass *base_src_class = GST_BASE_SRC_CLASS (klass);
+  GstPushSrcClass *push_src_class = GST_PUSH_SRC_CLASS (klass); 
 
   /* Setting up pads and setting metadata should be moved to
      base_class_init if you intend to subclass this class. */
@@ -132,29 +98,9 @@ gst_rs2src_class_init (GstRs2srcClass * klass)
   gobject_class->get_property = gst_rs2src_get_property;
   gobject_class->dispose = gst_rs2src_dispose;
   gobject_class->finalize = gst_rs2src_finalize;
-/*
-  base_src_class->get_caps = GST_DEBUG_FUNCPTR (gst_rs2src_get_caps);
-  base_src_class->negotiate = GST_DEBUG_FUNCPTR (gst_rs2src_negotiate);
-  base_src_class->fixate = GST_DEBUG_FUNCPTR (gst_rs2src_fixate);
-  base_src_class->set_caps = GST_DEBUG_FUNCPTR (gst_rs2src_set_caps);
-  base_src_class->decide_allocation =
-      GST_DEBUG_FUNCPTR (gst_rs2src_decide_allocation);
-  base_src_class->start = GST_DEBUG_FUNCPTR (gst_rs2src_start);
-  base_src_class->stop = GST_DEBUG_FUNCPTR (gst_rs2src_stop);
-  base_src_class->get_times = GST_DEBUG_FUNCPTR (gst_rs2src_get_times);
-  base_src_class->get_size = GST_DEBUG_FUNCPTR (gst_rs2src_get_size);
-  base_src_class->is_seekable = GST_DEBUG_FUNCPTR (gst_rs2src_is_seekable);
-  base_src_class->prepare_seek_segment =
-      GST_DEBUG_FUNCPTR (gst_rs2src_prepare_seek_segment);
-  base_src_class->do_seek = GST_DEBUG_FUNCPTR (gst_rs2src_do_seek);
-  base_src_class->unlock = GST_DEBUG_FUNCPTR (gst_rs2src_unlock);
-  base_src_class->unlock_stop = GST_DEBUG_FUNCPTR (gst_rs2src_unlock_stop);
-  base_src_class->query = GST_DEBUG_FUNCPTR (gst_rs2src_query);
-  base_src_class->event = GST_DEBUG_FUNCPTR (gst_rs2src_event);
-  base_src_class->create = GST_DEBUG_FUNCPTR (gst_rs2src_create);
-  base_src_class->alloc = GST_DEBUG_FUNCPTR (gst_rs2src_alloc);
-*/
-  base_src_class->fill = GST_DEBUG_FUNCPTR (gst_rs2src_fill);
+
+  // push_src_class->create = GST_DEBUG_FUNCPTR (gst_rs2src_create);
+  push_src_class->fill = gst_rs2src_fill;
 }
 
 static void
@@ -162,20 +108,16 @@ gst_rs2src_init (GstRs2src * rs2src)
 {
     GST_INFO(__FUNCTION__);
 
-    /*
-    rs2src->srcpad = gst_pad_new_from_static_template (&gst_rs2src_src_template, "src");
-    gst_element_add_pad (GST_ELEMENT (rs2src), rs2src->srcpad);
-
-    rs2src->silent = FALSE;
-    */
+    gst_base_src_set_live (GST_BASE_SRC (rs2src), TRUE);
+    
+    // GstBaseSrc *base_rs2src = (GstBaseSrc *)&(rs2src->push_rs2src);
+    // gst_base_src_set_live (base_rs2src, TRUE);
 }
 
 void
 gst_rs2src_set_property (GObject * object, guint property_id,
     const GValue * value, GParamSpec * pspec)
 {
-    GST_INFO(__FUNCTION__);
-        
   GstRs2src *rs2src = GST_RS2SRC (object);
 
   GST_DEBUG_OBJECT (rs2src, "set_property");
@@ -191,8 +133,6 @@ void
 gst_rs2src_get_property (GObject * object, guint property_id,
     GValue * value, GParamSpec * pspec)
 {
-    GST_INFO(__FUNCTION__);
-
   GstRs2src *rs2src = GST_RS2SRC (object);
 
   GST_DEBUG_OBJECT (rs2src, "get_property");
@@ -228,251 +168,32 @@ gst_rs2src_finalize (GObject * object)
   G_OBJECT_CLASS (gst_rs2src_parent_class)->finalize (object);
 }
 
-/* get caps from subclass */
-static GstCaps *
-gst_rs2src_get_caps (GstBaseSrc * src, GstCaps * filter)
-{
-  GstRs2src *rs2src = GST_RS2SRC (src);
-
-  GST_DEBUG_OBJECT (rs2src, "get_caps");
-
-  return NULL;
-}
-
-/* decide on caps */
-static gboolean
-gst_rs2src_negotiate (GstBaseSrc * src)
-{
-  GstRs2src *rs2src = GST_RS2SRC (src);
-
-  GST_DEBUG_OBJECT (rs2src, "negotiate");
-
-  return TRUE;
-}
-
-/* called if, in negotiation, caps need fixating */
-static GstCaps *
-gst_rs2src_fixate (GstBaseSrc * src, GstCaps * caps)
-{
-  GstRs2src *rs2src = GST_RS2SRC (src);
-
-  GST_DEBUG_OBJECT (rs2src, "fixate");
-
-  return NULL;
-}
-
-/* notify the subclass of new caps */
-static gboolean
-gst_rs2src_set_caps (GstBaseSrc * src, GstCaps * caps)
-{
-  GstRs2src *rs2src = GST_RS2SRC (src);
-
-  GST_DEBUG_OBJECT (rs2src, "set_caps");
-
-  return TRUE;
-}
-
-/* setup allocation query */
-static gboolean
-gst_rs2src_decide_allocation (GstBaseSrc * src, GstQuery * query)
-{
-  GstRs2src *rs2src = GST_RS2SRC (src);
-
-  GST_DEBUG_OBJECT (rs2src, "decide_allocation");
-
-  return TRUE;
-}
-
-/* start and stop processing, ideal for opening/closing the resource */
-static gboolean
-gst_rs2src_start (GstBaseSrc * src)
-{
-  GstRs2src *rs2src = GST_RS2SRC (src);
-
-  GST_DEBUG_OBJECT (rs2src, "start");
-
-  return TRUE;
-}
-
-static gboolean
-gst_rs2src_stop (GstBaseSrc * src)
-{
-  GstRs2src *rs2src = GST_RS2SRC (src);
-
-  GST_DEBUG_OBJECT (rs2src, "stop");
-
-  return TRUE;
-}
-
-/* given a buffer, return start and stop time when it should be pushed
- * out. The base class will sync on the clock using these times. */
-static void
-gst_rs2src_get_times (GstBaseSrc * src, GstBuffer * buffer,
-    GstClockTime * start, GstClockTime * end)
-{
-  GstRs2src *rs2src = GST_RS2SRC (src);
-
-  GST_DEBUG_OBJECT (rs2src, "get_times");
-
-}
-
-/* get the total size of the resource in bytes */
-static gboolean
-gst_rs2src_get_size (GstBaseSrc * src, guint64 * size)
-{
-  GstRs2src *rs2src = GST_RS2SRC (src);
-
-  GST_DEBUG_OBJECT (rs2src, "get_size");
-
-  return TRUE;
-}
-
-/* check if the resource is seekable */
-static gboolean
-gst_rs2src_is_seekable (GstBaseSrc * src)
-{
-  GstRs2src *rs2src = GST_RS2SRC (src);
-
-  GST_DEBUG_OBJECT (rs2src, "is_seekable");
-
-  return TRUE;
-}
-
-/* Prepare the segment on which to perform do_seek(), converting to the
- * current basesrc format. */
-static gboolean
-gst_rs2src_prepare_seek_segment (GstBaseSrc * src, GstEvent * seek,
-    GstSegment * segment)
-{
-  GstRs2src *rs2src = GST_RS2SRC (src);
-
-  GST_DEBUG_OBJECT (rs2src, "prepare_seek_segment");
-
-  return TRUE;
-}
-
-/* notify subclasses of a seek */
-static gboolean
-gst_rs2src_do_seek (GstBaseSrc * src, GstSegment * segment)
-{
-  GstRs2src *rs2src = GST_RS2SRC (src);
-
-  GST_DEBUG_OBJECT (rs2src, "do_seek");
-
-  return TRUE;
-}
-
-/* unlock any pending access to the resource. subclasses should unlock
- * any function ASAP. */
-static gboolean
-gst_rs2src_unlock (GstBaseSrc * src)
-{
-  GstRs2src *rs2src = GST_RS2SRC (src);
-
-  GST_DEBUG_OBJECT (rs2src, "unlock");
-
-  return TRUE;
-}
-
-/* Clear any pending unlock request, as we succeeded in unlocking */
-static gboolean
-gst_rs2src_unlock_stop (GstBaseSrc * src)
-{
-  GstRs2src *rs2src = GST_RS2SRC (src);
-
-  GST_DEBUG_OBJECT (rs2src, "unlock_stop");
-
-  return TRUE;
-}
-
-/* notify subclasses of a query */
-static gboolean
-gst_rs2src_query (GstBaseSrc * src, GstQuery * query)
-{
-  GstRs2src *rs2src = GST_RS2SRC (src);
-
-  GST_DEBUG_OBJECT (rs2src, "query");
-
-  return TRUE;
-}
-
-/* notify subclasses of an event */
-static gboolean
-gst_rs2src_event (GstBaseSrc * src, GstEvent * event)
-{
-  GstRs2src *rs2src = GST_RS2SRC (src);
-
-  GST_DEBUG_OBJECT (rs2src, "event");
-
-  return TRUE;
-}
-
-/* ask the subclass to create a buffer with offset and size, the default
- * implementation will call alloc and fill. */
 static GstFlowReturn
-gst_rs2src_create (GstBaseSrc * src, guint64 offset, guint size,
-    GstBuffer ** buf)
+gst_rs2src_fill (GstPushSrc * src, GstBuffer * buf)
 {
-  GstRs2src *rs2src = GST_RS2SRC (src);
+    GstRs2src *rs2src = GST_RS2SRC (src);
+    GstMapInfo map;
+    gint amount = 0;
 
-  GST_DEBUG_OBJECT (rs2src, "create");
+    gst_buffer_map (buf, &map, GST_MAP_WRITE);
 
-  return GST_FLOW_OK;
-}
+    {
+        static guint8 val = 0;
+        amount = 640 * 480 * 3;
 
-/* ask the subclass to allocate an output buffer. The default implementation
- * will use the negotiated allocator. */
-static GstFlowReturn
-gst_rs2src_alloc (GstBaseSrc * src, guint64 offset, guint size,
-    GstBuffer ** buf)
-{
-  GstRs2src *rs2src = GST_RS2SRC (src);
+        guint8 *data = map.data;
+        for (gint i = 0; i < amount; i++)
+        {
+            data[i] = val;
+        }
 
-  GST_DEBUG_OBJECT (rs2src, "alloc");
+        val = (val == 255) ? 0 : val + 1;
+    }
 
-  return GST_FLOW_OK;
-}
+    gst_buffer_unmap (buf, &map);
+    gst_buffer_resize (buf, 0, amount);
 
-/* ask the subclass to fill the buffer with data from offset and size */
-static GstFlowReturn
-gst_rs2src_fill (GstBaseSrc * src, guint64 offset, guint size, GstBuffer * buf)
-{
-    static guint32 i = 0; // FIXME
-
-  GstRs2src *rs2src = GST_RS2SRC (src);
-  GstMapInfo info;
-
-
-  GST_DEBUG_OBJECT (rs2src, "fill");
-
-  // if (rs2src->silent == FALSE)
-  {
-      g_print("%s: i %d offset %ld size %d\n", __FUNCTION__, i, offset, size);
-  }
-
-  if (size < sizeof(i))
-  {
-      GST_ERROR_OBJECT(rs2src, "gst_rs2src_fill: size too short");
-      return GST_FLOW_ERROR;
-  }
-
-  if (!gst_buffer_map (buf, &info, GST_MAP_WRITE)) return GST_FLOW_ERROR;
-
-  guint8 *data = info.data;  
-  memcpy(data, &i, sizeof(i));
-  i++;
-
-  gst_buffer_unmap (buf, &info);
-  gst_buffer_resize(buf, 0, sizeof(i));
-
-
-  if (i == 30)
-  {
-      i = 0;
-      return GST_FLOW_EOS;
-  }
-  
-  return GST_FLOW_OK;
+    return GST_FLOW_OK;
 }
 
 static gboolean
