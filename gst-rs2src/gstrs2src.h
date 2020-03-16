@@ -35,13 +35,26 @@ typedef struct _GstRs2srcClass GstRs2srcClass;
 
 struct _GstRs2src
 {
-    // GstBaseSrc base_rs2src;
     GstPushSrc push_rs2src;
+
+    guint width;
+    guint height;
+
+    guint8 val;
+    gint8 dval;    
+
+    gdouble framerate;
+
+    // stream
+    // gboolean acq_started;
+    gint n_frames;
+    gint total_timeouts;
+    GstClockTime duration;
+    GstClockTime last_frame_time;
 };
 
 struct _GstRs2srcClass
 {
-    // GstBaseSrcClass base_rs2src_class;
     GstPushSrcClass parent_class;    
 };
 
